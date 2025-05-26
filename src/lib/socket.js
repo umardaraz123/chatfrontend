@@ -1,7 +1,11 @@
 import { io } from 'socket.io-client';
 
 // Create a socket instance
-const socket = io('http://localhost:5001', {
+// const socket = io('http://localhost:5001', {
+//   withCredentials: true,
+//   autoConnect: false,
+// });
+const socket = io('https://chatbackend-beige.vercel.app', {
   withCredentials: true,
   autoConnect: false,
 });
