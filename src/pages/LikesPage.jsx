@@ -1,7 +1,7 @@
 // pages/LikesPage.jsx
 import React, { useEffect, useState } from 'react';
 import { useAuthStore } from '../store/useAuthStore';
-import { useNavigate } from 'react-router-dom'; // Add this import
+import { useNavigate } from 'react-router-dom';
 import { Heart, Clock, Loader, Eye, X, UserPlus, MessageCircle, UserCheck } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -11,10 +11,10 @@ const LikesPage = () => {
     sendFriendRequest, 
     getFriendRequests,
     getFriends,
-    setSelectedUser // Add this to set the selected user for chat
+    setSelectedUser
   } = useAuthStore();
   
-  const navigate = useNavigate(); // Add this
+  const navigate = useNavigate();
   
   const [likes, setLikes] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -22,10 +22,18 @@ const LikesPage = () => {
   const [sentRequests, setSentRequests] = useState(new Set());
   const [processingRequest, setProcessingRequest] = useState(new Set());
 
+  // Like type configurations
+  const likeTypeConfig = {
+    crush: { emoji: '💘', label: 'Crush', color: '#ec4899', bgColor: '#fdf2f8' },
+    intrigued: { emoji: '😍', label: 'Intrigued', color: '#f59e0b', bgColor: '#fffbeb' },
+    curious: { emoji: '🤔', label: 'Curious', color: '#8b5cf6', bgColor: '#faf5ff' },
+    fun: { emoji: '😂', label: 'Looks Fun', color: '#10b981', bgColor: '#f0fdf4' }
+  };
+
   useEffect(() => {
     loadLikes();
     loadFriends();
-    loadSentRequests(); // Add this
+    loadSentRequests();
   }, []);
 
   const loadLikes = async () => {
@@ -51,11 +59,9 @@ const LikesPage = () => {
     }
   };
 
-  // Add this new function to load sent requests
   const loadSentRequests = async () => {
     try {
       const requestsData = await getFriendRequests();
-      // Get outgoing request recipient IDs
       const sentRequestIds = requestsData.outgoing?.map(request => request.recipient._id) || [];
       setSentRequests(new Set(sentRequestIds));
     } catch (error) {
@@ -93,59 +99,78 @@ const LikesPage = () => {
   };
 
   const handleMessage = (user) => {
-    // Set the selected user in the store
     setSelectedUser(user);
-    // Navigate to chat page
     navigate('/dashboard/chat');
   };
 
-  const getStatusBadge = (user) => {
-    switch (user.status) {
-      case 'matched':
-        return (
-          <div className="match-badge">
-            <Heart size={16} fill="white" />
-            Matched!
-          </div>
-        );
-      
-      case 'rejected':
-        return (
-          <div className="rejected-badge">
-            <X size={16} />
-            Passed
-          </div>
-        );
-      
-      case 'viewed':
-        return (
-          <div className="viewed-badge">
-            <Eye size={16} />
-            Viewed
-          </div>
-        );
-      
-      default:
-        return (
-          <div className="pending-badge">
-            <Clock size={16} />
-            Pending
-          </div>
-        );
+  // Updated function to show YOUR like type prominently
+  const getYourLikeTypeBadge = (user) => {
+    const likeType = user.likeType; // YOUR like type
+    
+    if (likeType && likeTypeConfig[likeType]) {
+      const config = likeTypeConfig[likeType];
+      return (
+        <div 
+          className="your-like-type-badge"
+          style={{ 
+            backgroundColor: config.color,
+            color: 'white'
+          }}
+        >
+          <span className="like-emoji">{config.emoji}</span>
+          <span className="like-label">You felt: {config.label}</span>
+        </div>
+      );
     }
+    
+    // Fallback for regular likes without specific type
+    return (
+      <div className="your-like-type-badge default-like">
+        <span className="like-emoji">❤️</span>
+        <span className="like-label">You liked them</span>
+      </div>
+    );
+  };
+
+  // Function to show their response if matched
+  const getTheirResponseBadge = (user) => {
+    if (user.isMatch && user.theirLikeType) {
+      const config = likeTypeConfig[user.theirLikeType];
+      return (
+        <div 
+          className="their-response-badge your-like-type-badge"
+          style={{ 
+            backgroundColor: config.bgColor,
+            color: config.color,
+            border: `1px solid ${config.color}`
+          }}
+        >
+          <span className="like-emoji">{config.emoji}</span>
+          <span className="like-label">They felt: {config.label}</span>
+        </div>
+      );
+    }
+    
+    if (user.isMatch) {
+      return (
+        <div className="their-response-badge match">
+          <span className="like-emoji">❤️</span>
+          <span className="like-label">They liked you back!</span>
+        </div>
+      );
+    }
+    
+    return null;
   };
 
   const getStatusMessage = (user) => {
-    switch (user.status) {
-      case 'matched':
-        return 'You matched!';
-      case 'rejected':
-        return 'They passed on you';
-      case 'viewed':
-        return 'They saw your profile';
-      default:
-        return `Liked on ${new Date(user.likedAt).toLocaleDateString()}`;
+    const likeDate = new Date(user.likedAt).toLocaleDateString();
+    
+    if (user.isMatch) {
+      return `Matched on ${likeDate} 🎉`;
     }
+    
+    return `You liked them on ${likeDate}`;
   };
 
   const getFriendButton = (user) => {
@@ -154,7 +179,6 @@ const LikesPage = () => {
     const isFriend = friends.has(userId);
     const requestSent = sentRequests.has(userId);
 
-    // If already friends
     if (isFriend) {
       return (
         <button className="friend-status-btn friend">
@@ -164,7 +188,6 @@ const LikesPage = () => {
       );
     }
 
-    // If request already sent
     if (requestSent) {
       return (
         <button className="friend-status-btn sent" disabled>
@@ -174,7 +197,6 @@ const LikesPage = () => {
       );
     }
 
-    // If can send request
     return (
       <button 
         className="friend-request-btn"
@@ -204,7 +226,7 @@ const LikesPage = () => {
     <div className="likes-page">
       <div className="likes-header">
         <h1>People You Liked</h1>
-        <p>Waiting for them to like you back</p>
+        <p>See how you felt about each person and their responses</p>
       </div>
 
       {likes.length === 0 ? (
@@ -216,19 +238,35 @@ const LikesPage = () => {
       ) : (
         <div className="likes-grid">
           {likes.map((user) => (
-            <div key={user._id} className="like-card">
+            <div key={user._id} className={`like-card ${user.isMatch ? 'matched' : ''}`}>
               <div className="like-image">
                 <img 
-                  src={user.profilePic || '/default-avatar.png'} 
+                  src={user.profilePic || (user.gender === 'male' ? '/default-male-avatar.png' : '/default-female-avatar.png')} 
                   alt={user.fullName}
                 />
-                {getStatusBadge(user)}
+                
+                {/* Match indicator */}
+                {user.isMatch && (
+                  <div className="match-indicator">
+                    <Heart size={16} fill="white" />
+                    MATCH!
+                  </div>
+                )}
               </div>
               
               <div className="like-info">
                 <h3>{user.fullName}</h3>
                 <p>{user.age && `${user.age} years old`}</p>
-                <p>📍 {user.location}</p>
+                {user.location && <p>📍 {user.location}</p>}
+                
+                {/* YOUR like type - prominently displayed */}
+                <div className="like-actions-section">
+                  {getYourLikeTypeBadge(user)}
+                  
+                  {/* Their response if matched */}
+                  {getTheirResponseBadge(user)}
+                </div>
+                
                 {user.bio && <p className="bio">{user.bio}</p>}
                 
                 {user.interests && user.interests.length > 0 && (
@@ -244,13 +282,12 @@ const LikesPage = () => {
                 </p>
               </div>
 
-              {/* Friend Actions */}
               <div className="like-actions">
                 {getFriendButton(user)}
                 
                 <button 
                   className="message-btn"
-                  onClick={() => handleMessage(user)} // Updated this line
+                  onClick={() => handleMessage(user)}
                 >
                   <MessageCircle size={16} />
                   Message

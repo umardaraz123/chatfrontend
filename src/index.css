@@ -384,6 +384,25 @@ min-height: 100px;
     position: fixed;
     right: 10px;
 }
+.dashboard-layout .right .menu-wrapper .user-image {
+  position: relative;
+}
+.dashboard-layout .right .menu-wrapper .user-image .count {cursor: pointer;
+ width: 24px;
+ height: 24px;
+ border-radius: 50%;
+ background-color: white;
+  display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    color: var(--brown-color);
+    font-size: 6px;
+    font-weight: bold;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
 .dashboard-layout .right .menu-wrapper .user-image img {
     width: 36px;
     height: 36px;
@@ -765,26 +784,47 @@ min-height: 100px;
     margin-bottom: 4px;
     text-transform: capitalize;
 }
-.users-listing .list .action-buttons {
+ .action-buttons {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 16px;
+    margin-bottom: 16px;
     
 }
-.users-listing .list .action-buttons .action {
+.like-message {
+  padding: 8px;
+  color:#000;
+  text-align: center;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+.action-buttons .btnn {
+  padding: 8px;
+  border-radius: 4px;
+  display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    min-width: 120px;
+    font-size: 12px;
+    gap: 8px;
+}
+ .action-buttons .action {
     cursor: pointer;
    width: 32px;
    height: 32px;
    background-color: white;
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  border: none !important;
    display: flex;
    align-items: center;
    justify-content: center;
    font-size: 12px;
     border-radius: 50%;
 }
-.users-listing .list .action-buttons .action svg {
+ .action-buttons .action svg {
     color: var(--brown-color);
     width: 16px;
     height: auto;
@@ -1674,6 +1714,7 @@ background: linear-gradient(135deg, whitesmoke 0%, white 50%, whitesmoke 100%);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 12px;
 }
 
 .remaining-count {
@@ -1907,7 +1948,8 @@ background: linear-gradient(135deg, whitesmoke 0%, white 50%, whitesmoke 100%);
   text-align: center;
   padding: 0px 0px;
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
+  gap: 12px;
   align-items: center;
   margin-bottom: 12px;
 }
@@ -1915,7 +1957,7 @@ background: linear-gradient(135deg, whitesmoke 0%, white 50%, whitesmoke 100%);
 .instruction-item {
   display: flex;
   align-items: center;
-  flex: 0 0 49%;
+  
   gap: 10px;
   color: #666;
   font-size: 10px;
@@ -2045,7 +2087,15 @@ p{
   height: 200px;
   overflow: hidden;
 }
-
+.like-image .action-buttons {
+  position: absolute;
+  bottom: 0px;
+  right: 10px;
+  display: flex;
+  gap: 10px;
+  z-index: 5;
+  width: 100%;
+}
 .match-image img, .like-image img {
   width: 100%;
   height: 100%;
@@ -2086,7 +2136,7 @@ p{
 
 .match-info h3, .like-info h3 {
   font-size: 18px;
-  margin-bottom: 5px;
+  margin-bottom: 10px;
   color: var(--primary-color);
 }
 
@@ -2210,8 +2260,79 @@ p{
 
 .like-card {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  margin-bottom: 24px;
 }
-
+.swipe-list-item {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background-color: white;
+    position: relative;
+}
+.like-card .user-details {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+.your-like-type-badge,.mutual-feeling {
+  padding: 8px;
+  border-radius: 12px;
+  display: flex;
+  justify-content:center;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.your-like-type-badge.default-like {
+ 
+  background-color: #f0f0f0;
+}
+.like-options-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255,255,255,.961);
+ padding: 30px 24px;
+  z-index: 10;
+}
+.like-options-grid button {
+  background-color: white;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  width: 100%;
+  border: none;
+  padding: 16px;
+  gap: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 16px;
+  border-radius: 67px;
+}
+.like-options-overlay h3 {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+.like-options-overlay .close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: white;
+  border-radius: 50%;
+  border: none;
+  font-size: 24px;
+  color: #333;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none !important;
+}
 .like-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 25px rgba(0,0,0,0.15);
@@ -2416,10 +2537,31 @@ p{
   height: 50vh;
   gap: 20px;
 }
-
+.dropbox-page {
+  text-align: center;
+}
+.dropbox-page h1 {
+  font-size: 24px;
+  color: var(--primary-color);
+  margin-bottom: 20px;
+}
+.dropbox-page p{
+  font-size: 14px;
+  color: var(--primary-color);
+  margin-bottom: 12px;
+}
+.dropbox-page .like-info p,.dropbox-page .like-info{
+  text-align: left;
+}
+.swipes-count {
+  font-size: 14px;
+  margin-bottom: 12px;
+}
 /* Responsive */
 @media (max-width: 768px) {
-  
+  .match-image, .like-image {
+    height: auto;
+  }
   
   .friends-grid, .requests-grid {
     grid-template-columns: 1fr;

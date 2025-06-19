@@ -21,11 +21,15 @@ export const useAuthStore = create((set, get) => ({
   // New state for matches
   matches: [],
   isLoadingMatches: false,
-  matchStats: null,
 
   // New state for swipeable users
   swipeableUsers: [],
   isLoadingUsers: false,
+  hasMoreUsers: true,
+  currentPage: 1,
+
+  // New state for DropBox count
+  dropBoxCount: 0,
 
   // Existing functions
   checkAuth:async()=>{
@@ -290,58 +294,114 @@ export const useAuthStore = create((set, get) => ({
   },
 
   // Swipe functionality
-  getSwipeableUsers: async () => {
+  getSwipeableUsers: async (page = 1, append = false) => {
     try {
-      set({ isLoadingUsers: true });
-      const response = await axiosInstance.get('/swipe/users');
+      if (page === 1) {
+        set({ isLoadingUsers: true, currentPage: 1, hasMoreUsers: true });
+      }
       
-      // Calculate age for each user
+      const response = await axiosInstance.get(`/swipe/users?page=${page}&limit=10`);
+      
+      if (!response.data || response.data.length === 0) {
+        set({ 
+          hasMoreUsers: false,
+          isLoadingUsers: false 
+        });
+        return [];
+      }
+      
       const usersWithAge = response.data.map(user => ({
         ...user,
         age: calculateAge(user.dateOfBirth)
       }));
       
-      set({ 
-        swipeableUsers: usersWithAge, 
-        isLoadingUsers: false 
-      });
-      return usersWithAge;
+      if (append) {
+        const currentUsers = get().swipeableUsers;
+        const newUsers = usersWithAge.filter(newUser => 
+          !currentUsers.some(existingUser => existingUser._id === newUser._id)
+        );
+        
+        set({ 
+          swipeableUsers: [...currentUsers, ...newUsers],
+          isLoadingUsers: false,
+          currentPage: page,
+          hasMoreUsers: usersWithAge.length === 10
+        });
+        return newUsers;
+      } else {
+        set({ 
+          swipeableUsers: usersWithAge, 
+          isLoadingUsers: false,
+          currentPage: page,
+          hasMoreUsers: usersWithAge.length === 10
+        });
+        return usersWithAge;
+      }
     } catch (error) {
       console.error('Error fetching swipeable users:', error);
-      set({ isLoadingUsers: false });
-      toast.error('Failed to load users');
-      throw error;
+      set({ 
+        isLoadingUsers: false,
+        hasMoreUsers: false
+      });
+      
+      if (error.response?.status !== 404) {
+        toast.error('Failed to load users');
+      }
+      
+      return [];
     }
   },
 
-  swipeUser: async (userId, action) => {
+  // Add method to load more users
+  loadMoreUsers: async () => {
+    const currentState = get();
+    const nextPage = currentState.currentPage + 1;
+    
     try {
-      const response = await axiosInstance.post('/swipe/swipe', { userId, action });
-      return response.data; // This will include { success: true, isMatch, alreadySwiped, etc. }
+      console.log('Loading more users, page:', nextPage);
+      
+      const response = await axiosInstance.get(`/swipe/users?page=${nextPage}&limit=10`);
+      
+      if (!response.data || response.data.length === 0) {
+        console.log('No more users available');
+        set({ hasMoreUsers: false });
+        return [];
+      }
+      
+      const newUsersWithAge = response.data.map(user => ({
+        ...user,
+        age: calculateAge(user.dateOfBirth)
+      }));
+      
+      // Filter out users that might already be in the list
+      const existingUserIds = currentState.swipeableUsers.map(user => user._id);
+      const uniqueNewUsers = newUsersWithAge.filter(newUser => 
+        !existingUserIds.includes(newUser._id)
+      );
+      
+      console.log('New unique users loaded:', uniqueNewUsers.length);
+      
+      set({ 
+        swipeableUsers: [...currentState.swipeableUsers, ...uniqueNewUsers],
+        currentPage: nextPage,
+        hasMoreUsers: response.data.length === 10 // If less than 10, no more users
+      });
+      
+      return uniqueNewUsers;
     } catch (error) {
-      throw error;
+      console.error('Error loading more users:', error);
+      set({ hasMoreUsers: false });
+      return [];
     }
   },
 
-  getMatches: async () => {
-    try {
-      const response = await axiosInstance.get('/swipe/matches');
-      set({ matches: response.data });
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching matches:', error);
-      throw error;
-    }
-  },
-
-  sendFriendRequest: async (recipientId) => {
-    try {
-      const response = await axiosInstance.post('/friend-request/send', { recipientId });
-      return response.data;
-    } catch (error) {
-      console.error('Error sending friend request:', error);
-      throw error;
-    }
+  // Add reset function
+  resetSwipeableUsers: () => {
+    set({ 
+      swipeableUsers: [], 
+      currentPage: 1, 
+      hasMoreUsers: true 
+    });
   },
 
   // New friend request functions
@@ -392,6 +452,66 @@ export const useAuthStore = create((set, get) => ({
       return response.data;
     } catch (error) {
       console.error('Error fetching swipe stats:', error);
+      throw error;
+    }
+  },
+
+  swipeUser: async (userId, action, likeType = null) => {
+    console.log('Auth store swipeUser called:', { userId, action, likeType }); // Debug log
+    
+    try {
+      const response = await axiosInstance.post('/swipe/swipe', { 
+        userId, 
+        action,
+        likeType: action === 'like' ? likeType : null
+      });
+      
+      console.log('API call successful:', response.data); // Debug log
+      return response.data;
+    } catch (error) {
+      console.error('Error in auth store swipeUser:', error);
+      throw error;
+    }
+  },
+
+  // Update existing getReceivedSwipes to also update count
+  getReceivedSwipes: async () => {
+    try {
+      const response = await axiosInstance.get('/swipe/received');
+      set({ dropBoxCount: response.data.length }); // Update count
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching received swipes:', error);
+      throw error;
+    }
+  },
+
+  // Add function to get DropBox count
+  getDropBoxCount: async () => {
+    try {
+      const swipes = await get().getReceivedSwipes();
+      const count = swipes.length;
+      set({ dropBoxCount: count });
+      return count;
+    } catch (error) {
+      console.error('Error getting DropBox count:', error);
+      return 0;
+    }
+  },
+
+  // Add/update this function
+  getMatches: async () => {
+    try {
+      set({ isLoadingMatches: true });
+      const response = await axiosInstance.get('/swipe/matches');
+      set({ 
+        matches: response.data,
+        isLoadingMatches: false 
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching matches:', error);
+      set({ isLoadingMatches: false });
       throw error;
     }
   },

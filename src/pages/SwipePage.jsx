@@ -1,147 +1,170 @@
 // pages/SwipePage.jsx
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuthStore } from '../store/useAuthStore';
-import SwipeCard from '../components/SwipeCard';
-import { Loader, Users, Heart, RotateCcw,X } from 'lucide-react';
+import SwipeListItem from '../components/SwipeListItem';
+import { Loader, Heart, RefreshCw,X } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const SwipePage = () => {
   const { 
     swipeableUsers, 
     getSwipeableUsers, 
+    loadMoreUsers,
     swipeUser, 
     isLoadingUsers,
-    authUser 
+    hasMoreUsers,
+    resetSwipeableUsers
   } = useAuthStore();
   
-  const [currentIndex, setCurrentIndex] = useState(0);
+  // State variables
   const [isLoading, setIsLoading] = useState(false);
   const [swipeHistory, setSwipeHistory] = useState([]);
+  const [removedUsers, setRemovedUsers] = useState(new Set());
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  
+  // Refs
+  const observerRef = useRef();
+  const loadingRef = useRef();
 
+  // Calculate displayUsers AFTER removedUsers is defined
+  const displayUsers = swipeableUsers.filter(user => !removedUsers.has(user._id));
+
+  // Load initial users
   useEffect(() => {
-    loadUsers();
+    loadInitialUsers();
   }, []);
 
-  const loadUsers = async () => {
+  const loadInitialUsers = async () => {
     try {
       setIsLoading(true);
-      await getSwipeableUsers();
-      setCurrentIndex(0);
+      resetSwipeableUsers(); // Clear existing users
+      await getSwipeableUsers(1); // Load first page
     } catch (error) {
+      console.error('Error loading initial users:', error);
       toast.error('Failed to load users');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleSwipe = async (userId, action) => {
+  // LoadMore function
+  const loadMore = useCallback(async () => {
+    if (isLoadingMore || !hasMoreUsers) {
+      console.log('LoadMore blocked:', { isLoadingMore, hasMoreUsers });
+      return;
+    }
+    
     try {
-      const currentUserName = swipeableUsers[currentIndex]?.firstName || 'User';
+      console.log('Starting to load more users...');
+      setIsLoadingMore(true);
+      const newUsers = await loadMoreUsers();
+      console.log('Loaded new users:', newUsers.length);
+    } catch (error) {
+      console.error('Error loading more users:', error);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, [isLoadingMore, hasMoreUsers, loadMoreUsers]);
+
+  // Intersection Observer for infinite scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const target = entries[0];
+        console.log('Intersection observer triggered:', {
+          isIntersecting: target.isIntersecting,
+          hasMoreUsers,
+          isLoadingUsers,
+          isLoadingMore,
+          currentUsersCount: displayUsers.length
+        });
+        
+        if (target.isIntersecting && hasMoreUsers && !isLoadingUsers && !isLoadingMore) {
+          console.log('Triggering loadMore...');
+          loadMore();
+        }
+      },
+      { 
+        threshold: 0.1,
+        rootMargin: '100px'
+      }
+    );
+
+    if (loadingRef.current) {
+      observer.observe(loadingRef.current);
+    }
+
+    observerRef.current = observer;
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, [hasMoreUsers, isLoadingUsers, isLoadingMore, displayUsers.length, loadMore]);
+
+  const handleSwipe = async (userId, action, likeType = null) => {
+    try {
+      console.log('Swiping:', { userId, action, likeType });
       
-      // Move to next card immediately
-      setCurrentIndex(prevIndex => prevIndex + 1);
+      // Add to removed users immediately for UI responsiveness
+      setRemovedUsers(prev => new Set([...prev, userId]));
       
-      // Add to swipe history for undo functionality
-      setSwipeHistory(prev => [...prev, { 
-        userId, 
-        action, 
-        index: currentIndex 
-      }]);
+      // Add to swipe history
+      setSwipeHistory(prev => [...prev, { userId, action, likeType, timestamp: Date.now() }]);
       
-      // Show immediate feedback for the swipe action
-      if (action === 'like') {
-        toast.success(`❤️ You liked ${currentUserName}!`, { duration: 1500 });
-      } else {
-        toast(`👋 You passed on ${currentUserName}`, { 
-          duration: 1000,
+      // Make API call
+      const result = await swipeUser(userId, action, likeType);
+      
+      if (result.isMatch) {
+        toast.success('🎉 It\'s a match!', {
+          duration: 3000,
           style: {
-            background: '#6b7280',
+            background: '#ec4899',
             color: 'white',
+            fontWeight: 'bold',
           }
         });
       }
       
-      // Try to save to backend
-      const result = await swipeUser(userId, action);
-      
-      // Check if it's a match
-      if (result.isMatch && !result.alreadySwiped) {
-        setTimeout(() => {
-          toast.success(`🎉 It's a match with ${currentUserName}! Start chatting now!`, { 
-            duration: 4000,
-            style: {
-              background: '#10b981',
-              color: 'white',
-              fontWeight: 'bold',
-              fontSize: '16px'
-            }
-          });
-        }, 800);
-      }
-      
     } catch (error) {
-      console.error('Error swiping user:', error);
-      const errorMessage = error.response?.data?.message;
-      
-      // Only show toast for real errors, not already swiped scenarios
-      if (errorMessage && !errorMessage.includes('Already swiped')) {
-        toast.error(errorMessage);
-      }
+      console.error('Error swiping:', error);
+      // Remove from removed users if API call failed
+      setRemovedUsers(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(userId);
+        return newSet;
+      });
+      toast.error('Failed to swipe. Please try again.');
     }
   };
 
-  const handleUndo = () => {
-    if (swipeHistory.length > 0) {
-      const lastSwipe = swipeHistory[swipeHistory.length - 1];
-      setSwipeHistory(prev => prev.slice(0, -1));
-      setCurrentIndex(lastSwipe.index);
-      toast.success('Undo successful!');
+  const undoLastSwipe = () => {
+    if (swipeHistory.length === 0) {
+      toast('No swipes to undo');
+      return;
     }
+    
+    const lastSwipe = swipeHistory[swipeHistory.length - 1];
+    
+    // Remove from removed users
+    setRemovedUsers(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(lastSwipe.userId);
+      return newSet;
+    });
+    
+    // Remove from history
+    setSwipeHistory(prev => prev.slice(0, -1));
+    
+    toast.success('Swipe undone!');
   };
 
   if (isLoading) {
     return (
-      <div className="swipe-page-loading">
+      <div className="loading-container">
         <Loader className="animate-spin" size={40} />
-        <p>Finding people for you...</p>
-      </div>
-    );
-  }
-
-  if (!swipeableUsers || swipeableUsers.length === 0) {
-    return (
-      <div className="no-users-container">
-        <Users size={80} className="text-gray-400" />
-        <h2>No more users to show</h2>
-        <p>Come back later for more profiles!</p>
-        <button 
-          onClick={loadUsers}
-          className="refresh-btn"
-        >
-          <RotateCcw size={20} />
-          Refresh
-        </button>
-      </div>
-    );
-  }
-
-  const currentUser = swipeableUsers[currentIndex];
-  const nextUser = swipeableUsers[currentIndex + 1];
-  const thirdUser = swipeableUsers[currentIndex + 2]; // Add third user
-
-  if (!currentUser) {
-    return (
-      <div className="no-users-container">
-        <Heart size={80} className="text-pink-400" />
-        <h2>You've seen everyone!</h2>
-        <p>Check back later for new profiles</p>
-        <button 
-          onClick={loadUsers}
-          className="refresh-btn"
-        >
-          <RotateCcw size={20} />
-          Find More
-        </button>
+        <p>Loading profiles...</p>
       </div>
     );
   }
@@ -149,72 +172,99 @@ const SwipePage = () => {
   return (
     <div className="swipe-page">
       <div className="swipe-header">
-        {/* <h1>Discover</h1> */}
-        <div className="swipe-instructions">
+     <div className="swipe-instructions">
         <div className="instruction-item">
-          <div className="instruction-icon dislike">
-            <X size={20} />
-          </div>
-          <span>Swipe left or tap ✕ to pass</span>
-        </div>
-        
-        <div className="instruction-item">
-          <div className="instruction-icon like">
-            <Heart size={20} />
-          </div>
-          <span>Swipe right or tap ❤️ to like</span>
-        </div>
+        <span className="instruction-icon">
+          <X size={20} />
+        </span>
+        <span className="instruction-text">Swipe left to dislike</span>
       </div>
-        <div className="header-info">
-          <span className="remaining-count">
-          <span>  {swipeableUsers.length - currentIndex}</span> profiles remaining
-          </span>
-          {swipeHistory.length > 0 && (
-            <button 
-              onClick={handleUndo}
-              className="undo-btn"
-            >
-              <RotateCcw size={16} />
-              Undo
-            </button>
-          )}
-        </div>
+      <div className="instruction-item">
+        <span className="instruction-icon">
+          <Heart size={20} />
+        </span>
+        <span className="instruction-text">Swipe right to like</span>
       </div>
+    
+     </div>
+      
+      </div>
+
+      {/* Debug info (remove in production) */}
+     
 
       <div className="swipe-container">
-        {/* Third card (furthest background) */}
-        {thirdUser && (
-          <div className="swipe-card-wrapper third-card">
-            <SwipeCard 
-              user={thirdUser} 
-              onSwipe={() => {}} 
-              isActive={false}
-            />
+        {displayUsers.length === 0 && !isLoadingUsers ? (
+          <div className="no-users">
+            <Heart size={80} className="text-gray-400" />
+            <h2>No more profiles</h2>
+            <p>Check back later for new people to discover!</p>
+            <button 
+              className="refresh-btn"
+              onClick={loadInitialUsers}
+            >
+              <RefreshCw size={18} />
+              Refresh
+            </button>
           </div>
-        )}
-        
-        {/* Second card (middle background) */}
-        {nextUser && (
-          <div className="swipe-card-wrapper next-card">
-            <SwipeCard 
-              user={nextUser} 
-              onSwipe={() => {}} 
-              isActive={false}
-            />
-          </div>
-        )}
-        
-        {/* Current card (foreground) */}
-        <div className="swipe-card-wrapper current-card">
-          <SwipeCard 
-            user={currentUser} 
-            onSwipe={handleSwipe}
-            isActive={true}
-          />
-        </div>
-      </div>
+        ) : (
+          <>
+            <div className="swipe-list">
+              {displayUsers.map((user, index) => (
+                <SwipeListItem
+                  key={user._id}
+                  user={user}
+                  onSwipe={handleSwipe}
+                  isActive={true} // Make ALL cards active
+                />
+              ))}
+            </div>
 
-      
+            {/* Loading indicator for infinite scroll */}
+            <div 
+              ref={loadingRef} 
+              className="loading-trigger"
+              style={{ 
+                height: '50px', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                margin: '20px 0'
+              }}
+            >
+              {isLoadingMore && (
+                <div className="loading-more">
+                  <Loader className="animate-spin" size={24} />
+                  <span>Loading more profiles...</span>
+                </div>
+              )}
+              {!hasMoreUsers && displayUsers.length > 0 && (
+                <div className="no-more-users">
+                  <p>No more profiles to show</p>
+                </div>
+              )}
+            </div>
+
+            {/* Manual load more button for testing */}
+            <div className="manual-load-more" style={{ padding: '20px', textAlign: 'center' }}>
+              <button 
+                onClick={loadMore}
+                disabled={isLoadingMore || !hasMoreUsers}
+                style={{
+                  padding: '10px 20px',
+                  background: hasMoreUsers ? '#3b82f6' : '#gray',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: hasMoreUsers ? 'pointer' : 'not-allowed'
+                }}
+              >
+                {isLoadingMore ? 'Loading...' : hasMoreUsers ? 'Load More ' : 'No More Users'}
+              </button>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 };

@@ -13,6 +13,7 @@ import ChatContent from './pages/ChatContent'
 import SwipePage from './pages/SwipePage';
 import FriendsPage from './pages/FriendsPage'
 import { Routes,Route, Navigate, useLocation } from 'react-router-dom'
+import DropBoxPage from './pages/DropBoxPage'
 import { useAuthStore } from './store/useAuthStore'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import {Loader} from 'lucide-react'
@@ -59,6 +60,7 @@ const App = () => {
           <Route path="/dashboard/matches" element={<MatchesPage />} />
           <Route path="/dashboard/likes" element={<LikesPage />} />
           <Route path="/dashboard/friends" element={<FriendsPage />} />
+          <Route path="/dashboard/dropbox" element={<DropBoxPage />} />
           {/* Add more nested routes for other dashboard pages */}
         </Route>
        

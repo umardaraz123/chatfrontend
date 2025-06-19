@@ -89,6 +89,11 @@ const DashboardLayout = () => {
   <Heart size={20} />
   <span>My Likes</span>
 </Link></li>
+<li onClick={() => setShowMenu(false)}>
+<Link to="/dashboard/dropbox" className="nav-item">
+  <Heart size={20} />
+  <span>My DropBox</span>
+</Link></li>
             {/* <li onClick={() => setShowMenu(false)}><Link
               to="/dashboard/find-love-one"
               className={location.pathname === "/dashboard/find-love-one" ? "active" : ""}
