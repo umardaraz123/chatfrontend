@@ -12,6 +12,7 @@ const LoginPage = () => {
   const { login, isLoggingIn } = useAuthStore();
 
   const handleSubmit = async (e) => {
+   
     e.preventDefault();
     login(formData);
   };
@@ -110,7 +111,7 @@ const LoginPage = () => {
             </div>
     
             {/* Right Side Image */}
-            <div className="col-lg-6 d-none d-lg-block">
+            <div className="col-lg-6 mt-4 mt-lg-0 d-lg-block">
               <AuthImagePattern 
                 title="Join our community"
                 subtitle="Connect with friends, share moments, and stay in touch with your loved ones."

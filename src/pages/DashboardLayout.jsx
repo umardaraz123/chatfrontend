@@ -2,11 +2,21 @@
 import React, { useEffect,useState } from 'react';
 import { Outlet } from 'react-router-dom'; // For dynamic routing to render different content
 import { useAuthStore } from '../store/useAuthStore'
-import { LogOut } from 'lucide-react';
+import { 
+  HeartHandshake, 
+  LayoutDashboardIcon, 
+  LogOut, 
+  MessageCircleCode, 
+  PowerOffIcon, 
+  User2Icon,
+  Users,  // Add this import
+  Heart   // Add this import
+} from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom'; // useLocation hook
 import { UserIcon } from 'lucide-react';
 import { HiMenuAlt1 } from "react-icons/hi";
 import { IoCloseOutline } from "react-icons/io5";
+import { GiEgyptianProfile } from 'react-icons/gi';
 const DashboardLayout = () => {
   const location = useLocation();
   const { getUserDetail, logout, userDetails } = useAuthStore();
@@ -33,30 +43,58 @@ const DashboardLayout = () => {
             <h2 className='user-name'>{userDetails?.firstName}</h2>
           </div>
           <ul className='links'>
-            <li><Link
+            <li onClick={() => setShowMenu(false)}><Link
               to="/dashboard"
               className={location.pathname === "/dashboard" ? "active" : ""}
             >
-              Dashboard
+          <LayoutDashboardIcon />     Dashboard
             </Link></li>
-            <li><Link
+            <li onClick={() => setShowMenu(false)}><Link
               to="/dashboard/profile"
               className={location.pathname === "/dashboard/profile" ? "active" : ""}
             >
-              Profile
+             <GiEgyptianProfile /> Profile
             </Link></li>
-            <li><Link
+            <li onClick={() => setShowMenu(false)}><Link
               to="/dashboard/chat"
               className={location.pathname === "/dashboard/chat" ? "active" : ""}
             >
-              Messages
+           <MessageCircleCode />   Messages
             </Link></li>
-            <li><Link
+            
+         <li onClick={() => setShowMenu(false)}><Link
+              to="/dashboard/swipe"
+              className={location.pathname === "/dashboard/swipe" ? "active" : ""}
+            >
+           <HeartHandshake />   Discover
+            </Link></li>
+            <li onClick={() => setShowMenu(false)}>
+  <Link 
+    to="/dashboard/friends" 
+    className={location.pathname === "/dashboard/friends" ? "active" : ""}
+  >
+    <Users size={20} />
+    <span>Friends</span>
+  </Link>
+</li>
+
+           <li onClick={() => setShowMenu(false)}>
+             <Link to="/dashboard/matches" className="nav-item">
+  <Users size={20} />
+  <span>Matches</span>
+</Link>
+           </li>
+<li onClick={() => setShowMenu(false)}>
+<Link to="/dashboard/likes" className="nav-item">
+  <Heart size={20} />
+  <span>My Likes</span>
+</Link></li>
+            {/* <li onClick={() => setShowMenu(false)}><Link
               to="/dashboard/find-love-one"
               className={location.pathname === "/dashboard/find-love-one" ? "active" : ""}
             >
-              Find Love
-            </Link></li>
+           <HeartHandshake />   Find Love
+            </Link></li> */}
 
             {/* Add more sidebar links as needed */}
           </ul>

@@ -1,9 +1,11 @@
 import React from 'react'
 import { useAuthStore } from '../store/useAuthStore'
 import { Link } from 'react-router-dom'
-import { MessageSquare,Settings,LogOut,User } from 'lucide-react'
+import { MessageSquare,Settings,LogOut,User, LogIn, ShieldUser } from 'lucide-react'
+import { MdOutlineDashboardCustomize } from "react-icons/md";
 import { Home } from 'lucide-react'
 import { Heart } from 'lucide-react'
+import Logo from '../../src/images/logo.png'
 
 const Navbar = () => {
   const{logout,authUser} = useAuthStore()
@@ -19,8 +21,7 @@ const Navbar = () => {
             to="/"
             
           >
-            <Home />
-            
+           <img src={Logo} alt="logo" className='logo-image' />            
           </Link>
         </div>
   
@@ -29,7 +30,7 @@ const Navbar = () => {
 {authUser && (
   <div className='links-wrapper'>
   <Link to="/dashboard" className='button'>
-  <User className="size-5" />
+  < MdOutlineDashboardCustomize />
   <span className="link-text">Dashboard</span>
 </Link>
 
@@ -43,11 +44,11 @@ const Navbar = () => {
 {!authUser && (
  <div className='links-wrapper'>
   <Link to="/login" className='link-wrapper'>
-  <User className="size-5" />
+  <ShieldUser />
   <span className="link-text">Login</span>
 </Link>
 <Link to="/signup" className='link-wrapper'>
-  <User className="size-5" />
+   <ShieldUser />
   <span className="link-text">Signup</span>
 </Link>
 

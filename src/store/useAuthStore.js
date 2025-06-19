@@ -23,6 +23,10 @@ export const useAuthStore = create((set, get) => ({
   isLoadingMatches: false,
   matchStats: null,
 
+  // New state for swipeable users
+  swipeableUsers: [],
+  isLoadingUsers: false,
+
   // Existing functions
   checkAuth:async()=>{
     try {
@@ -52,9 +56,11 @@ export const useAuthStore = create((set, get) => ({
     }
   },
   login: async (data) => {
+    
     set({ isLoggingIng: true });
     try {
       const res = await axiosInstance.post("/auth/login", data);
+      
       set({ authUser: res.data });
       toast.success("Logged in successfully");
     } catch (error) {
@@ -282,4 +288,124 @@ export const useAuthStore = create((set, get) => ({
       throw error;
     }
   },
+
+  // Swipe functionality
+  getSwipeableUsers: async () => {
+    try {
+      set({ isLoadingUsers: true });
+      const response = await axiosInstance.get('/swipe/users');
+      
+      // Calculate age for each user
+      const usersWithAge = response.data.map(user => ({
+        ...user,
+        age: calculateAge(user.dateOfBirth)
+      }));
+      
+      set({ 
+        swipeableUsers: usersWithAge, 
+        isLoadingUsers: false 
+      });
+      return usersWithAge;
+    } catch (error) {
+      console.error('Error fetching swipeable users:', error);
+      set({ isLoadingUsers: false });
+      toast.error('Failed to load users');
+      throw error;
+    }
+  },
+
+  swipeUser: async (userId, action) => {
+    try {
+      const response = await axiosInstance.post('/swipe/swipe', { userId, action });
+      return response.data; // This will include { success: true, isMatch, alreadySwiped, etc. }
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getMatches: async () => {
+    try {
+      const response = await axiosInstance.get('/swipe/matches');
+      set({ matches: response.data });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching matches:', error);
+      throw error;
+    }
+  },
+
+  sendFriendRequest: async (recipientId) => {
+    try {
+      const response = await axiosInstance.post('/friend-request/send', { recipientId });
+      return response.data;
+    } catch (error) {
+      console.error('Error sending friend request:', error);
+      throw error;
+    }
+  },
+
+  // New friend request functions
+  getFriendRequests: async () => {
+    try {
+      const response = await axiosInstance.get('/friend-request/requests');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching friend requests:', error);
+      throw error;
+    }
+  },
+
+  respondToFriendRequest: async (requestId, action) => {
+    try {
+      const response = await axiosInstance.put(`/friend-request/respond/${requestId}`, { action });
+      return response.data;
+    } catch (error) {
+      console.error('Error responding to friend request:', error);
+      throw error;
+    }
+  },
+
+  getFriends: async () => {
+    try {
+      const response = await axiosInstance.get('/friend-request/friends');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching friends:', error);
+      throw error;
+    }
+  },
+
+  // New swipe functions
+  getLikedUsers: async () => {
+    try {
+      const response = await axiosInstance.get('/swipe/liked');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching liked users:', error);
+      throw error;
+    }
+  },
+
+  getSwipeStats: async () => {
+    try {
+      const response = await axiosInstance.get('/swipe/stats');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching swipe stats:', error);
+      throw error;
+    }
+  },
 }));
+
+// Helper function to calculate age
+function calculateAge(dateOfBirth) {
+  if (!dateOfBirth) return '';
+  const dob = new Date(dateOfBirth);
+  const today = new Date();
+  let age = today.getFullYear() - dob.getFullYear();
+  const monthDiff = today.getMonth() - dob.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+    age--;
+  }
+  return age;
+}

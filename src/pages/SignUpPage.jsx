@@ -5,6 +5,7 @@ import AuthImagePattern from "../components/AuthImagePattern.jsx";
 import toast from "react-hot-toast";
 import { Eye, EyeOff } from "lucide-react";
 import CreatableSelect from "react-select/creatable";
+import { Upload } from "lucide-react";
 const SignUpPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -320,7 +321,7 @@ const SignUpPage = () => {
                     <div className="input-wrapper">
                       <label className="">Hairs color</label>
                       <input
-                        type="number"
+                        type="text"
                         className="input"
                         value={formData.hairs}
                         onChange={(e) =>
@@ -333,7 +334,7 @@ const SignUpPage = () => {
                     <div className="input-wrapper">
                       <label className="">Eyes color</label>
                       <input
-                        type="number"
+                        type="text"
                         className="input"
                         value={formData.eyes}
                         onChange={(e) =>
@@ -494,12 +495,16 @@ const SignUpPage = () => {
                     {/* Profile Picture */}
                     <div className="input-wrapper">
                       <label className="">Profile Picture</label>
-                      <input
+                      
+                     <div className="profile">
+                      <Upload />
+                       <input
                         type="file"
                         className="input"
                         accept="image/*"
                         onChange={handleProfilePicChange}
                       />
+                     </div>
                     </div>
                   </div>
                 </div>
@@ -524,7 +529,7 @@ const SignUpPage = () => {
           </div>
 
           {/* Right Side Image */}
-          <div className="col-lg-6 d-none d-lg-block">
+          <div className="col-lg-6  mt-4 mt-lg-0 d-lg-block">
             <AuthImagePattern
               title="Join our community"
               subtitle="Connect with friends, share moments, and stay in touch with your loved ones."

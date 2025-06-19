@@ -6,8 +6,9 @@ import { TfiEmail } from "react-icons/tfi";
 import { FaUserTie } from "react-icons/fa";
 import { BsGenderMale } from "react-icons/bs";
 import { FaUserShield } from "react-icons/fa";
-import { Locate, Phone, Eye, EyeOff } from 'lucide-react';
+import { Locate, Phone,Ruler,PersonStanding, Mails, Cake, LocateFixed, HeartHandshake, Dribbble } from 'lucide-react';
 import { CiEdit } from "react-icons/ci";
+import { Upload } from 'lucide-react';
 import { IoClose } from "react-icons/io5";
 import CreatableSelect from "react-select/creatable";
 import toast from "react-hot-toast";
@@ -187,6 +188,7 @@ const EditProfileModal = ({ isOpen, onClose, userDetails, onUpdateProfile }) => 
                     <label className="">Email</label>
                     <input
                       type="email"
+                      readOnly
                       className="input"
                       value={formData.email}
                       onChange={(e) =>
@@ -543,27 +545,30 @@ const EditProfileModal = ({ isOpen, onClose, userDetails, onUpdateProfile }) => 
                 <div className="col-12">
                   <div className="input-wrapper">
                     <label className="">Profile Picture</label>
-                    <input
+                    <div className="profile">
+                      <Upload />
+                      <input
                       type="file"
                       className="input"
                       accept="image/*"
                       onChange={handleProfilePicChange}
                     />
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div className="action-buttons-modal">
+              <div className="d-flex justify-content-center gap-1 mt-4">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="button secondary"
+                  className="button"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="button primary"
+                  className="button"
                   disabled={isUpdatingProfile}
                 >
                   {isUpdatingProfile ? "Updating..." : "Update Profile"}
@@ -642,82 +647,85 @@ const Profile = () => {
         </div> 
 
         <div className="inner">
-          <div className="name"></div>
-          <div className="title">Profile Details</div>
-          
-          <div className="row">
-            <div className="col-6">
-              <div className="item">
-                <FaUserTie /> <span>{userDetails?.firstName} {userDetails?.lastName}</span>
-              </div>
-            </div>
-            <div className="col-6">
-              <div className="item">
-                <TfiEmail /> {userDetails?.email}
-              </div>
-            </div>
-            <div className="col-6">
-              <div className="item">
-                <FaUserShield /> {userDetails?.createdAt?.substring(0, 10)}
-              </div>
-            </div>
-            <div className="col-6">
-              <div className="item">
-                <BsGenderMale /> {userDetails?.gender}
-              </div>
-            </div>
-            <div className="col-6">
-              <div className="item">
-                <Locate/> {userDetails?.location}
-              </div>
-            </div>
-            <div className="col-6">
-              <div className="item">
-                <Phone /> {userDetails?.phoneNumber}
-              </div>
-            </div>
-          </div>
+      <div className="name">
+                   
+                  </div>
+                  <div className="title">
+                    Profile Details
+                  </div>
+                  <div className="item-wrapper">
+                    
+<div className="item">
+ <PersonStanding />  <span>{userDetails?.firstName} {userDetails?.lastName}</span>
 
-          <h4 className='title'>Bio</h4>
-          <p className="text">
-            {userDetails?.bio ? userDetails?.bio : "No bio available"}
-          </p>
-
-          <h4 className='title'>Interests</h4>
-          <div className="intrests">
-            {userDetails?.interests?.length > 0 ? (
-              userDetails?.interests.map((interest, index) => (
-                <div className='intrest' key={index}>{interest}</div>
-              ))
-            ) : (
-              <p>No interests added</p>
-            )}
-          </div>
-
-          {/* Additional Profile Information */}
+                    </div>
+                    
+<div className="item">
+ <Mails /> {userDetails?.email}
+</div>
+                   
+                    
+<div className="item">
+  <Cake /> {userDetails?.createdAt?.substring(0, 10)}
+</div>
+                 
+                     
+<div className="item">
+  <BsGenderMale /> {userDetails?.gender}
+</div>
+                   
+                     
+<div className="item">
+   <LocateFixed /> {userDetails?.location}
+</div>
+                   
+                     
+<div className="item">
+  <Phone /> {userDetails?.phoneNumber}
+</div>
+                    </div>
+                  
+                     <h4 className='title'>Bio</h4>
+                     <p className="text">
+                      {userDetails?.bio ? userDetails?.bio : "No bio available"}
+                     </p>
+                  <h4 className='title'>Interests</h4>
+                  <div className="intrests">
+                    
+                    
+                      {userDetails?.interests?.length > 0 ? (
+                        userDetails?.interests.map((interest, index) => (
+                          <div className='intrest' key={index}>{interest}</div>
+                        ))
+                      ) : (
+                        <li>No interests added</li>
+                      )}
+                    
+                  </div>
+                   {/* Additional Profile Information */}
           {(userDetails?.height || userDetails?.weight || userDetails?.eyes || userDetails?.hairs) && (
             <>
               <h4 className='title'>Physical Attributes</h4>
-              <div className="row">
+              <div className="item-wrapper">
                 {userDetails?.height && (
-                  <div className="col-6">
-                    <div className="item">📏 Height: {userDetails.height} cm</div>
-                  </div>
+                 
+                    <div className="item"><Ruler /> Height: {userDetails.height} cm</div>
+                 
                 )}
                 {userDetails?.weight && (
-                  <div className="col-6">
+                  
                     <div className="item">⚖️ Weight: {userDetails.weight} kg</div>
-                  </div>
+                 
                 )}
                 {userDetails?.eyes && (
-                  <div className="col-6">
+                  
                     <div className="item">👁️ Eyes: {userDetails.eyes}</div>
-                  </div>
+                 
                 )}
                 {userDetails?.hairs && (
-                  <div className="col-6">
+                  
                     <div className="item">💇 Hair: {userDetails.hairs}</div>
-                  </div>
+                
                 )}
               </div>
             </>
@@ -726,31 +734,48 @@ const Profile = () => {
           {(userDetails?.relationship || userDetails?.orientation || userDetails?.smoking || userDetails?.alcohol) && (
             <>
               <h4 className='title'>Lifestyle</h4>
-              <div className="row">
+              <div className="item-wrapper">
                 {userDetails?.relationship && (
-                  <div className="col-6">
+                 
                     <div className="item">💕 Status: {userDetails.relationship}</div>
-                  </div>
+                 
                 )}
                 {userDetails?.orientation && (
-                  <div className="col-6">
+                
                     <div className="item">🌈 Orientation: {userDetails.orientation}</div>
-                  </div>
+                
                 )}
                 {userDetails?.smoking && (
-                  <div className="col-6">
+                 
                     <div className="item">🚬 Smoking: {userDetails.smoking}</div>
-                  </div>
+                
                 )}
                 {userDetails?.alcohol && (
-                  <div className="col-6">
+                  
                     <div className="item">🍷 Drinking: {userDetails.alcohol}</div>
-                  </div>
+                
                 )}
+                 {userDetails?.lookingFor && (
+                  
+                    <div className="item"> 
+                    <HeartHandshake />
+                     Looking For: {userDetails.lookingFor}</div>
+                
+                )}
+                {userDetails?.sociability && (
+                  
+                    <div className="item"> 
+                    <Dribbble />
+                     Sociability: {userDetails.sociability}</div>
+                
+                )}
+                
               </div>
             </>
           )}
-        </div>
+                 
+                  
+    </div>
       </div>
       
       {/* Edit Profile Modal */}

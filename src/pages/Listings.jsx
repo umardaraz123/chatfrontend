@@ -9,6 +9,7 @@ import { IoChatbox, IoEyeOutline, IoHeart, IoHeartOutline, IoClose, IoLocation, 
 import { BsChatDots } from "react-icons/bs";
 import { HiOutlineUsers } from "react-icons/hi2";
 import { IoStatsChartOutline } from "react-icons/io5";
+import { Heart, HeartHandshakeIcon, HeartIcon } from 'lucide-react'
 
 // Match Details Modal Component
 const MatchDetailsModal = ({ isOpen, onClose, matchDetails, user, onStartChat }) => {
@@ -216,31 +217,40 @@ const UserDetailsModal = ({ isOpen, onClose, userDetails, onStartChat }) => {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <div className="header">
+        <div className="header no-padding">
           <button onClick={onClose} className="close-button">
             <IoClose />
           </button>
           
-          <div className="header-content">
-            <div className='title'>
-              <IoPersonOutline />
-              <span>User Profile</span>
-            </div>
+        
+               {userDetails?.profilePic ? (
+                          <div className="image">
+                            <img src={userDetails?.profilePic} alt={userDetails?.firstName} />
+                          </div>
+                        ) : userDetails?.gender === 'male' ? (
+                          <div className="image">
+                            <img src={boyImage} alt={userDetails?.firstName} />
+                          </div>
+                        ) : (
+                         <div className="image">
+                           <img src={girlImage} alt={userDetails?.firstName} />
+                         </div>
+                        )}
             
-            <div className='subtitle'>
-              {userDetails?.firstName} {userDetails?.lastName}
-            </div>
-            <div className='subtitle'>
-              {getAge(userDetails?.dateOfBirth)} years old
-            </div>
-          </div>
+           
+          
         </div>
 
         <div className="modal-body">
           <h4 className="body-title text-center">
             👤 Profile Details
           </h4>
-
+ <div className='body-title mb-1'>
+            <HiOutlineUsers />  {userDetails?.firstName} {userDetails?.lastName}
+            </div>
+            <div className='body-title mb-2'>
+             <IoCalendar /> {getAge(userDetails?.dateOfBirth)} years old
+            </div>
           <div className="compatibility-details">
             {/* Basic Info */}
             <div className="detail-item">
@@ -442,7 +452,7 @@ const Listings = () => {
       setIsUserModalOpen(true);
     } catch (error) {
       console.error('Error getting user details:', error);
-      alert('❌ Error getting user details. Please try again.');
+     
     }
   };
 
@@ -570,7 +580,7 @@ const Listings = () => {
           </div>
         ) : (
           currentList?.map((user) => (
-            <div key={user._id} className='col-12 col-md-6 col-lg-3'>
+            <div key={user._id} className='col-6 col-md-6 col-lg-3'>
               <div className="list">
                 <div className="image">
                   {user?.profilePic ? (
@@ -595,12 +605,13 @@ const Listings = () => {
                   </h2>
                   
                   {/* Show location if available */}
-                  {user?.location && (
+                  {user?.location ?  
                     <div className="location">
                       <SlLocationPin />
                       <span>{user.location}</span>
                     </div>
-                  )}
+                    : <div className="location">Location not specified</div>
+                  }
                   
                   <div className="action-buttons">
                     <div 
@@ -616,7 +627,7 @@ const Listings = () => {
                       title='Chat with user'
                       onClick={() => handleStartChat(user)}
                     >
-                      <BsChatDots />
+                      <BsChatDots style={{ color: 'var(--brown-color)' }} />
                     </div>
 
                     {/* Match details button */}
@@ -626,7 +637,7 @@ const Listings = () => {
                         title={`View detailed compatibility analysis (${user.matchScore}%)`}
                         onClick={() => handleViewMatchDetails(user)}
                       >
-                        <GiLovers />
+                        <HeartHandshakeIcon style={{ color: 'red' }} />
                       </div>
                     )}
                   </div>

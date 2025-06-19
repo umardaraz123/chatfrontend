@@ -7,7 +7,11 @@ import SettingPage from './pages/SettingPage'
 import Listings from './pages/Listings'
 import DashBoard from './pages/Dashboard'
 import ProfilePage from './pages/ProfilePage'
+import LikesPage from './pages/LikesPage'
+import MatchesPage from './pages/MatchesPage'
 import ChatContent from './pages/ChatContent'
+import SwipePage from './pages/SwipePage';
+import FriendsPage from './pages/FriendsPage'
 import { Routes,Route, Navigate, useLocation } from 'react-router-dom'
 import { useAuthStore } from './store/useAuthStore'
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -18,20 +22,29 @@ const App = () => {
   const {authUser,checkAuth,isCheckingAuth}= useAuthStore();
   const location = useLocation();
   
+  useEffect(()=>{
+    console.log('🚀 App component mounted, calling checkAuth...');
+ checkAuth()
+  },[checkAuth])
+  console.log('Auth Debug:', { 
+    authUser: authUser ? 'User exists' : 'No user', 
+    isCheckingAuth, 
+    pathname: location.pathname,
+    userDetails: authUser ? { id: authUser._id, email: authUser.email } : null
+  });
+  
+  // Show loading spinner while checking authentication
+  if (isCheckingAuth) {
+    return (
+      <div className='main-loader'>
+        <Loader className="size-10 animate-spin" />
+      </div>
+    );
+  }
+
   // Check if current route includes "dashboard"
   const isDashboardRoute = location.pathname.includes('/dashboard');
   
-  useEffect(()=>{
- checkAuth()
-  },[checkAuth])
-  // console.log(authUser)
-  if(isCheckingAuth && !authUser){
-   return(
-    <div className='main-loader'>
-    <Loader className="size-10 animate-spin" />
-  </div>
-   )
-  }
   return (
     <div >
       {!isDashboardRoute && <Navbar />}
@@ -42,6 +55,10 @@ const App = () => {
           <Route path="/dashboard" element={authUser ? <DashBoard /> : <Navigate to="/login" />} />
           <Route path='/dashboard/find-love-one' element={authUser ? <Listings /> : <Navigate to='/login' />} />
           <Route path='/dashboard/chat' element={authUser ? <ChatContent /> : <Navigate to='/login' />} />
+          <Route path="/dashboard/swipe" element={<SwipePage />} />
+          <Route path="/dashboard/matches" element={<MatchesPage />} />
+          <Route path="/dashboard/likes" element={<LikesPage />} />
+          <Route path="/dashboard/friends" element={<FriendsPage />} />
           {/* Add more nested routes for other dashboard pages */}
         </Route>
        
