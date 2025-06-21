@@ -802,7 +802,7 @@ min-height: 100px;
 }
 .action-buttons .btnn {
   padding: 8px;
-  border-radius: 56px;
+  border-radius: 55px;
   display: flex;
     align-items: center;
     justify-content: center;
