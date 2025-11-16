@@ -59,9 +59,51 @@ export const useAuthStore = create((set, get) => ({
       set({isSigningUp:false})
     }
   },
+
+  // New signup flow methods
+  sendSignupOTP: async (email) => {
+    try {
+      const response = await axiosInstance.post('/auth/signup/send-otp', { email });
+      toast.success(response.data.message || 'Verification code sent to your email');
+      return response.data;
+    } catch (error) {
+      const errorMessage = error?.response?.data?.message || 'Failed to send OTP';
+      toast.error(errorMessage);
+      throw error;
+    }
+  },
+
+  verifySignupOTP: async (email, otp) => {
+    try {
+      const response = await axiosInstance.post('/auth/signup/verify-otp', { email, otp });
+      toast.success(response.data.message || 'Email verified successfully');
+      return response.data;
+    } catch (error) {
+      const errorMessage = error?.response?.data?.message || 'Invalid OTP';
+      toast.error(errorMessage);
+      throw error;
+    }
+  },
+
+  completeSignup: async (data) => {
+    set({ isSigningUp: true });
+    try {
+      const response = await axiosInstance.post('/auth/signup/complete', data);
+      set({ authUser: response.data });
+      toast.success("Account created successfully!");
+      return response.data;
+    } catch (error) {
+      const errorMessage = error?.response?.data?.message || 'Failed to create account';
+      toast.error(errorMessage);
+      throw error;
+    } finally {
+      set({ isSigningUp: false });
+    }
+  },
+
   login: async (data) => {
     
-    set({ isLoggingIng: true });
+    set({ isLoggingIn: true });
     try {
       const res = await axiosInstance.post("/auth/login", data);
       
@@ -70,7 +112,7 @@ export const useAuthStore = create((set, get) => ({
     } catch (error) {
       toast.error(error.response.data.message);
     } finally {
-      set({ isLoggingIng: false });
+      set({ isLoggingIn: false });
     }
   },
   updateProfile: async (data) => {
@@ -405,6 +447,18 @@ export const useAuthStore = create((set, get) => ({
   },
 
   // New friend request functions
+  sendFriendRequest: async (userId) => {
+    try {
+      const response = await axiosInstance.post('/friend-request/send', { recipientId: userId });
+      toast.success('Friend request sent successfully!');
+      return response.data;
+    } catch (error) {
+      const errorMessage = error?.response?.data?.message || 'Failed to send friend request';
+      toast.error(errorMessage);
+      throw error;
+    }
+  },
+
   getFriendRequests: async () => {
     try {
       const response = await axiosInstance.get('/friend-request/requests');
@@ -512,6 +566,47 @@ export const useAuthStore = create((set, get) => ({
     } catch (error) {
       console.error('Error fetching matches:', error);
       set({ isLoadingMatches: false });
+      throw error;
+    }
+  },
+
+  // Password Reset Functions
+  requestPasswordReset: async (email) => {
+    try {
+      const response = await axiosInstance.post('/auth/forgot-password', { email });
+      toast.success(response.data.message || 'OTP sent to your email');
+      return response.data;
+    } catch (error) {
+      const errorMessage = error?.response?.data?.message || 'Failed to send OTP';
+      toast.error(errorMessage);
+      throw error;
+    }
+  },
+
+  verifyOTP: async (email, otp) => {
+    try {
+      const response = await axiosInstance.post('/auth/verify-otp', { email, otp });
+      toast.success(response.data.message || 'OTP verified successfully');
+      return response.data;
+    } catch (error) {
+      const errorMessage = error?.response?.data?.message || 'Invalid OTP';
+      toast.error(errorMessage);
+      throw error;
+    }
+  },
+
+  resetPassword: async (email, otp, newPassword) => {
+    try {
+      const response = await axiosInstance.post('/auth/reset-password', { 
+        email, 
+        otp, 
+        newPassword 
+      });
+      toast.success(response.data.message || 'Password reset successful');
+      return response.data;
+    } catch (error) {
+      const errorMessage = error?.response?.data?.message || 'Failed to reset password';
+      toast.error(errorMessage);
       throw error;
     }
   },

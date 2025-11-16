@@ -1,7 +1,18 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAuthStore } from '../store/useAuthStore';
-import { IoCloudUploadOutline, IoArrowBackOutline } from "react-icons/io5";
-import userImage from '../../src/images/user1.jpg'
+import { 
+  IoArrowBackOutline, 
+  IoSearchOutline, 
+  IoCreateOutline,
+  IoAttachOutline,
+  IoImageOutline,
+  IoMicOutline,
+  IoSendOutline,
+  IoPlayOutline,
+  IoPauseOutline,
+  IoCallOutline
+} from "react-icons/io5";
+import userImage from '../../src/images/user1.jpg';
 import { 
   connectSocket, 
   setupSocketListeners, 
@@ -12,6 +23,7 @@ import {
   stopTyping,
   disconnectSocket
 } from '../lib/socket';
+import './ChatContent.css';
 
 const ChatContent = () => {
   const { 
@@ -33,6 +45,13 @@ const ChatContent = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [showChatView, setShowChatView] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isRecording, setIsRecording] = useState(false);
+  const [audioBlob, setAudioBlob] = useState(null);
+  const [audioDuration, setAudioDuration] = useState(0);
+  const [playingAudio, setPlayingAudio] = useState(null);
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
   
   // Initialize conversationMessages from localStorage
   const [conversationMessages, setConversationMessages] = useState(() => {
@@ -147,15 +166,28 @@ const ChatContent = () => {
     const diffInMinutes = Math.floor((now - messageTime) / (1000 * 60));
     
     if (diffInMinutes < 1) return 'Just now';
-    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+    if (diffInMinutes < 60) return `${diffInMinutes} min ago`;
     
     const diffInHours = Math.floor(diffInMinutes / 60);
-    if (diffInHours < 24) return `${diffInHours}h ago`;
+    if (diffInHours < 24) return `${diffInHours} min ago`;
     
     const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays === 1) return 'Yesterday';
     if (diffInDays < 7) return `${diffInDays}d ago`;
     
-    return messageTime.toLocaleDateString();
+    return messageTime.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+  };
+
+  // Filter conversations based on search
+  const filteredConversations = conversations.filter(conv => 
+    conv.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    conv.lastName?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Calculate unread count (mock - you can implement real unread logic)
+  const getUnreadCount = (userId) => {
+    // Mock implementation - replace with real unread logic from backend
+    return 0; // You can implement this with actual unread messages
   };
 
   // Initialize socket connection and fetch conversations
@@ -373,56 +405,82 @@ const ChatContent = () => {
   // Show user listing view (only if no user is pre-selected)
   if (!showChatView && !selectedUser) {
     return (
-      <div className="chat-container chat-room">
-        <div className="users-listing">
-          <h2 className="title-users-listing">
-            {authUser?.role === 'admin' ? 'Customers' : 'Contacts'}
-          </h2>
-          
-          <div className="users">
-            {conversations.length === 0 ? (
-              <p className="title-users-listing">No conversations found</p>
-            ) : (
-              conversations.map((conversation) => {
-                const lastMessage = conversationMessages[conversation._id];
-                const lastMessageText = formatLastMessage(lastMessage, authUser._id, conversation);
-                
-                return (
-                  <div 
-                    key={conversation._id}
-                    className="user-wrapper"
-                    onClick={() => handleUserSelect(conversation)}
-                  >
-                    <div className="relative image">
-                      <img 
-                        src={conversation.profilePic || userImage} 
-                        alt={conversation.firstName}
-                        className="img-user"
-                      />
-                      {onlineUsers.includes(conversation._id) && (
-                        <span className="online"></span>
+      <div className="messages-page">
+        {/* Header */}
+        <div className="messages-header">
+          <button className="back-btn" onClick={() => window.history.back()}>
+            <IoArrowBackOutline size={24} />
+          </button>
+          <h1>Messages</h1>
+          <button className="new-message-btn">
+            <IoCreateOutline size={24} />
+          </button>
+        </div>
+
+        {/* Search Bar */}
+        <div className="search-container">
+          <IoSearchOutline className="search-icon" size={20} />
+          <input 
+            type="text"
+            placeholder="Search"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="search-input"
+          />
+        </div>
+
+        {/* Conversations List */}
+        <div className="conversations-list">
+          {filteredConversations.length === 0 ? (
+            <div className="empty-state">
+              <p>No conversations found</p>
+            </div>
+          ) : (
+            filteredConversations.map((conversation) => {
+              const lastMessage = conversationMessages[conversation._id];
+              const lastMessageText = formatLastMessage(lastMessage, authUser._id, conversation);
+              const unreadCount = getUnreadCount(conversation._id);
+              
+              return (
+                <div 
+                  key={conversation._id}
+                  className={`conversation-item ${selectedUser?._id === conversation._id ? 'selected' : ''}`}
+                  onClick={() => handleUserSelect(conversation)}
+                >
+                  <div className="conversation-avatar">
+                    <img 
+                      src={conversation.profilePic || userImage} 
+                      alt={conversation.firstName}
+                    />
+                    {onlineUsers.includes(conversation._id) && (
+                      <span className="online-indicator"></span>
+                    )}
+                  </div>
+                  
+                  <div className="conversation-content">
+                    <div className="conversation-top">
+                      <h3 className="conversation-name">
+                        {conversation.firstName} {conversation.lastName}
+                      </h3>
+                      {lastMessage && (
+                        <span className="conversation-time">
+                          {getTimeAgo(lastMessage.createdAt)}
+                        </span>
                       )}
                     </div>
-                    <div className="data">
-                      <div className="top-row">
-                        <p className="name">
-                          {conversation.firstName}
-                        </p>
-                        {lastMessage && (
-                          <span className="time">
-                            {getTimeAgo(lastMessage.createdAt)}
-                          </span>
-                        )}
-                      </div>
-                      <p className="text">
-                        {lastMessageText || conversation.location || 'No location'}
+                    <div className="conversation-bottom">
+                      <p className="conversation-preview">
+                        {lastMessageText || 'Start a conversation'}
                       </p>
+                      {unreadCount > 0 && (
+                        <span className="unread-badge">{unreadCount}</span>
+                      )}
                     </div>
                   </div>
-                );
-              })
-            )}
-          </div>
+                </div>
+              );
+            })
+          )}
         </div>
       </div>
     );
@@ -430,152 +488,231 @@ const ChatContent = () => {
 
   // Show chat view (when user is selected either from conversations or from listings)
   return (
-    <div className="chat-room">
-      <div className="chat-container">
-        {/* Chat header with back button */}
-        <div className="header">
-          <button 
-            onClick={handleBackToUsers}
-            className="back-button"
-          >
-            <IoArrowBackOutline />
-          </button>
-          <div className="image">
+    <div className="chat-page">
+      {/* Chat Header */}
+      <div className="chat-header">
+        <button onClick={handleBackToUsers} className="chat-back-btn">
+          <IoArrowBackOutline size={24} />
+        </button>
+        
+        <div className="chat-user-info">
+          <div className="chat-avatar">
             <img 
               src={selectedUser.profilePic || userImage} 
               alt={selectedUser.firstName}
-              className=""
             />
           </div>
-          <div className="data">
-            <p className="name">
-              {selectedUser.firstName} {selectedUser.lastName} {selectedUser?.location && `(${selectedUser.location})`}
+          <div className="chat-user-details">
+            <h2>{selectedUser.firstName} {selectedUser.lastName}</h2>
+            <p className="chat-user-status">
+              {onlineUsers.includes(selectedUser._id) ? 'Active now' : 'Offline'}
             </p>
-            <div className="online-status">
-              <span className={`circle ${onlineUsers.includes(selectedUser._id) ? 'online' : 'offline'}`}></span>
-              <span className="status">
-                {onlineUsers.includes(selectedUser._id) ? 'Online' : 'Offline'}
-              </span>
-            </div>
           </div>
         </div>
         
-        {/* Messages */}
-        <div className="messages-wrapper">
-          {isLoadingMessages ? (
-            <div className="loading-messages">
-              Loading messages...
-            </div>
-          ) : messages.length === 0 ? (
-            <div className="loading-messages">
-              No messages yet. Start a conversation!
-            </div>
-          ) : (
-            messages.map((message, index) => (
-              <div 
-                key={message._id || index}
-                className={` flex ${message.senderId === authUser._id ? 'justify-end' : 'justify-start'}`}
-              >
-                <div 
-                  className={`message-main ${
-                    message.senderId === authUser._id 
-                      ? 'sender-message' 
-                      : 'receiver-message'
-                  }`}
-                >
-                  <div className="image">
-                    <img 
-                      src={message.senderId === authUser._id ? authUser.profilePic : selectedUser.profilePic || userImage} 
-                      alt={message.senderId === authUser._id ? authUser.firstName : selectedUser.firstName}
-                      className="img-user"
-                    />
-                  </div>
-                  <div className="data">
-                    <p className="name">
-                      {message.senderId === authUser._id ? authUser.firstName : selectedUser.firstName}
-                      <span className="time">{new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                    </p>
-                    {message.text && <p className='text'>{message.text}</p>}
-                      
-                    {message.image && (
-                      <img 
-                        src={message.image} 
-                        alt="Message" 
-                        className="img"
-                        onClick={() => window.open(message.image, '_blank')}
-                      />
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))
-          )}
-          {isTyping && (
-            <div className="flex items-center text-gray-500 mb-2">
-              <div className="typing-indicator">
-                <span></span>
-                <span></span>
-                <span></span>
-              </div>
-              <p className="ml-2 text-sm">{selectedUser.firstName} is typing...</p>
-            </div>
-          )}
-          <div ref={lastMessageRef} />
-        </div>
+        <button className="chat-call-btn">
+          <IoCallOutline size={24} />
+        </button>
+      </div>
         
-        {/* Message input */}
-        <div className="chat-box">
-          <form onSubmit={handleSendMessage}>
-            {imagePreview && (
-              <div className="uploaded-image">
-                <img 
-                  src={imagePreview} 
-                  alt="Preview" 
-                  className="h-20 rounded"
-                />
-                <button 
-                  type="button"
-                  onClick={removeImage}
-                  className="close-button"
-                >
-                  ×
-                </button>
-              </div>
-            )}
-            <div className="inner-box">
-              <div className="input-container">
-                <input 
-                  type="text"
-                  className="text"
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  onKeyUp={handleTyping}
-                  placeholder="Type a message..."
-                />
-                
-                <div className="file-wrapper">
-                  <IoCloudUploadOutline />
-                  <input 
-                    type="file" 
-                    className="hidden" 
-                    accept="image/*"
-                    onChange={handleImageChange}
-                  />
-                </div>
-                
-                <button 
-                  type="submit"
-                  className="send"
-                  disabled={!newMessage.trim() && !imageFile}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
-                  </svg>
-                </button>
-              </div>
+      {/* Messages Area */}
+      <div className="chat-messages">
+        {isLoadingMessages ? (
+          <div className="chat-loading">
+            <div className="typing-indicator">
+              <span></span>
+              <span></span>
+              <span></span>
             </div>
-          </form>
-        </div>
+            <p>Loading messages...</p>
+          </div>
+        ) : messages.length === 0 ? (
+          <div className="chat-empty">
+            <p>No messages yet. Start a conversation!</p>
+          </div>
+        ) : (
+          <>
+            {/* Date Separator */}
+            <div className="date-separator">
+              <span>Today</span>
+            </div>
+            
+            {messages.map((message, index) => {
+              const isMyMessage = message.senderId === authUser._id;
+              const showAvatar = !isMyMessage;
+              
+              return (
+                <div 
+                  key={message._id || index}
+                  className={`message-wrapper ${isMyMessage ? 'my-message' : 'their-message'}`}
+                >
+                  {showAvatar && (
+                    <div className="message-avatar">
+                      <img 
+                        src={selectedUser.profilePic || userImage} 
+                        alt={selectedUser.firstName}
+                      />
+                    </div>
+                  )}
+                  
+                  <div className="message-group">
+                    {!isMyMessage && index === 0 && (
+                      <span className="message-sender-name">{selectedUser.firstName} {selectedUser.lastName}</span>
+                    )}
+                    
+                    <div className={`message-bubble ${isMyMessage ? 'my-bubble' : 'their-bubble'}`}>
+                      {message.text && (
+                        <p className="message-text">{message.text}</p>
+                      )}
+                      
+                      {message.audio && (
+                        <div className="audio-message">
+                          <button 
+                            className="audio-play-btn"
+                            onClick={() => {
+                              if (playingAudio === message._id) {
+                                setPlayingAudio(null);
+                              } else {
+                                setPlayingAudio(message._id);
+                              }
+                            }}
+                          >
+                            {playingAudio === message._id ? (
+                              <IoPauseOutline size={20} />
+                            ) : (
+                              <IoPlayOutline size={20} />
+                            )}
+                          </button>
+                          <div className="audio-waveform">
+                            <div className="waveform-bars">
+                              {[...Array(20)].map((_, i) => (
+                                <span 
+                                  key={i} 
+                                  className="waveform-bar"
+                                  style={{ 
+                                    height: `${Math.random() * 100}%`,
+                                    animationDelay: `${i * 0.05}s`
+                                  }}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                          <span className="audio-duration">
+                            {message.audioDuration ? `00:${message.audioDuration}` : '00:16'}
+                          </span>
+                        </div>
+                      )}
+                      
+                      {message.image && (
+                        <div className="image-message">
+                          <img 
+                            src={message.image} 
+                            alt="Shared" 
+                            onClick={() => window.open(message.image, '_blank')}
+                          />
+                        </div>
+                      )}
+                      
+                      <span className="message-time">
+                        {new Date(message.createdAt).toLocaleTimeString([], { 
+                          hour: '2-digit', 
+                          minute: '2-digit',
+                          hour12: true 
+                        })}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </>
+        )}
+        
+        {isTyping && (
+          <div className="typing-indicator-wrapper">
+            <div className="typing-indicator">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+        )}
+        
+        <div ref={lastMessageRef} />
+      </div>
+        
+      {/* Message Input */}
+      <div className="chat-input-container">
+        <form onSubmit={handleSendMessage}>
+          {imagePreview && (
+            <div className="image-preview">
+              <img src={imagePreview} alt="Preview" />
+              <button 
+                type="button"
+                onClick={removeImage}
+                className="remove-preview"
+              >
+                ×
+              </button>
+            </div>
+          )}
+          
+          <div className="chat-input-wrapper">
+            <button 
+              type="button" 
+              className="input-action-btn"
+              onClick={() => document.getElementById('file-input').click()}
+            >
+              <IoAttachOutline size={22} />
+            </button>
+            <input 
+              type="file" 
+              id="file-input"
+              style={{ display: 'none' }}
+              accept="image/*"
+              onChange={handleImageChange}
+            />
+            
+            <input 
+              type="text"
+              className="message-input"
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              onKeyUp={handleTyping}
+              placeholder="Write your message"
+            />
+            
+            <button 
+              type="button" 
+              className="input-action-btn"
+              onClick={() => document.getElementById('image-input').click()}
+            >
+              <IoImageOutline size={22} />
+            </button>
+            <input 
+              type="file" 
+              id="image-input"
+              style={{ display: 'none' }}
+              accept="image/*"
+              onChange={handleImageChange}
+            />
+            
+            <button 
+              type="button" 
+              className="input-action-btn"
+            >
+              <IoMicOutline size={22} />
+            </button>
+            
+            <button 
+              type="submit"
+              className="send-btn"
+              disabled={!newMessage.trim() && !imageFile}
+            >
+              <IoSendOutline size={20} />
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

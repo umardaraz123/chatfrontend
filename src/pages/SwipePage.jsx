@@ -2,8 +2,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuthStore } from '../store/useAuthStore';
 import SwipeListItem from '../components/SwipeListItem';
-import { Loader, Heart, RefreshCw,X } from 'lucide-react';
+import { Loader, Heart, RefreshCw, X } from 'lucide-react';
 import toast from 'react-hot-toast';
+import './SwipePage.css';
 
 const SwipePage = () => {
   const { 

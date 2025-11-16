@@ -1,34 +1,31 @@
 // pages/LikesPage.jsx
 import React, { useEffect, useState } from 'react';
 import { useAuthStore } from '../store/useAuthStore';
-import { useNavigate } from 'react-router-dom';
-import { Heart, Clock, Loader, Eye, X, UserPlus, MessageCircle, UserCheck } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Heart, Loader, ChevronLeft, User, Compass, ThumbsUp, MessageCircle, X, UserPlus, UserCheck, Clock } from 'lucide-react';
 import toast from 'react-hot-toast';
+import './LikesPage.css';
+import bdImage from '../images/bd.png';
 
 const LikesPage = () => {
   const { 
     getLikedUsers, 
-    sendFriendRequest, 
+    setSelectedUser,
+    sendFriendRequest,
     getFriendRequests,
-    getFriends,
-    setSelectedUser
+    getFriends
   } = useAuthStore();
   
   const navigate = useNavigate();
+  const location = useLocation();
   
-  const [likes, setLikes] = useState([]);
+  const [activeTab, setActiveTab] = useState('liked-you'); // 'liked-you' or 'your-likes'
+  const [yourLikes, setYourLikes] = useState([]);
+  const [likedYou, setLikedYou] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [friends, setFriends] = useState(new Set());
   const [sentRequests, setSentRequests] = useState(new Set());
   const [processingRequest, setProcessingRequest] = useState(new Set());
-
-  // Like type configurations
-  const likeTypeConfig = {
-    crush: { emoji: '💘', label: 'Crush', color: '#ec4899', bgColor: '#fdf2f8' },
-    intrigued: { emoji: '😍', label: 'Intrigued', color: '#f59e0b', bgColor: '#fffbeb' },
-    curious: { emoji: '🤔', label: 'Curious', color: '#8b5cf6', bgColor: '#faf5ff' },
-    fun: { emoji: '😂', label: 'Looks Fun', color: '#10b981', bgColor: '#f0fdf4' }
-  };
 
   useEffect(() => {
     loadLikes();
@@ -40,7 +37,9 @@ const LikesPage = () => {
     try {
       setIsLoading(true);
       const likesData = await getLikedUsers();
-      setLikes(likesData);
+      // Mock data for likedYou - you'll need to create backend endpoint
+      setYourLikes(likesData);
+      setLikedYou([]); // TODO: Add backend endpoint for people who liked you
     } catch (error) {
       console.error('Failed to load likes:', error);
       toast.error('Failed to load likes');
@@ -76,18 +75,13 @@ const LikesPage = () => {
       setProcessingRequest(prev => new Set([...prev, userId]));
       await sendFriendRequest(userId);
       setSentRequests(prev => new Set([...prev, userId]));
-      toast.success(`Friend request sent to ${userName}!`);
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Failed to send friend request';
+      const errorMessage = error.response?.data?.message || '';
       
       if (errorMessage.includes('already friends')) {
-        toast.error('You are already friends with this person');
         setFriends(prev => new Set([...prev, userId]));
       } else if (errorMessage.includes('already exists')) {
-        toast.error('Friend request already sent');
         setSentRequests(prev => new Set([...prev, userId]));
-      } else {
-        toast.error(errorMessage);
       }
     } finally {
       setProcessingRequest(prev => {
@@ -98,205 +92,242 @@ const LikesPage = () => {
     }
   };
 
-  const handleMessage = (user) => {
-    setSelectedUser(user);
-    navigate('/dashboard/chat');
+  const handleCrushBack = async (userId) => {
+    // TODO: Implement crush back functionality
+    toast.success('Crushed back!');
   };
 
-  // Updated function to show YOUR like type prominently
-  const getYourLikeTypeBadge = (user) => {
-    const likeType = user.likeType; // YOUR like type
-    
-    if (likeType && likeTypeConfig[likeType]) {
-      const config = likeTypeConfig[likeType];
-      return (
-        <div 
-          className="your-like-type-badge"
-          style={{ 
-            backgroundColor: config.color,
-            color: 'white'
-          }}
-        >
-          <span className="like-emoji">{config.emoji}</span>
-          <span className="like-label">You felt: {config.label}</span>
-        </div>
-      );
-    }
-    
-    // Fallback for regular likes without specific type
-    return (
-      <div className="your-like-type-badge default-like">
-        <span className="like-emoji">❤️</span>
-        <span className="like-label">You liked them</span>
-      </div>
-    );
+  const handlePass = async (userId) => {
+    // TODO: Implement pass functionality
+    toast.success('Passed');
   };
 
-  // Function to show their response if matched
-  const getTheirResponseBadge = (user) => {
-    if (user.isMatch && user.theirLikeType) {
-      const config = likeTypeConfig[user.theirLikeType];
-      return (
-        <div 
-          className="their-response-badge your-like-type-badge"
-          style={{ 
-            backgroundColor: config.bgColor,
-            color: config.color,
-            border: `1px solid ${config.color}`
-          }}
-        >
-          <span className="like-emoji">{config.emoji}</span>
-          <span className="like-label">They felt: {config.label}</span>
-        </div>
-      );
+  const getAge = (dateOfBirth) => {
+    if (!dateOfBirth) return null;
+    const dob = new Date(dateOfBirth);
+    const today = new Date();
+    let age = today.getFullYear() - dob.getFullYear();
+    const monthDiff = today.getMonth() - dob.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+      age--;
     }
-    
-    if (user.isMatch) {
-      return (
-        <div className="their-response-badge match">
-          <span className="like-emoji">❤️</span>
-          <span className="like-label">They liked you back!</span>
-        </div>
-      );
-    }
-    
-    return null;
+    return age;
   };
 
-  const getStatusMessage = (user) => {
-    const likeDate = new Date(user.likedAt).toLocaleDateString();
-    
-    if (user.isMatch) {
-      return `Matched on ${likeDate} 🎉`;
-    }
-    
-    return `You liked them on ${likeDate}`;
+  const isActiveRoute = (path) => {
+    return location.pathname === path;
   };
 
-  const getFriendButton = (user) => {
-    const userId = user._id;
-    const isProcessing = processingRequest.has(userId);
-    const isFriend = friends.has(userId);
-    const requestSent = sentRequests.has(userId);
-
-    if (isFriend) {
-      return (
-        <button className="friend-status-btn friend">
-          <UserCheck size={16} />
-          Friends
-        </button>
-      );
-    }
-
-    if (requestSent) {
-      return (
-        <button className="friend-status-btn sent" disabled>
-          <Clock size={16} />
-          Request Sent
-        </button>
-      );
-    }
-
-    return (
-      <button 
-        className="friend-request-btn"
-        onClick={() => handleSendFriendRequest(userId, user.fullName)}
-        disabled={isProcessing}
-      >
-        {isProcessing ? (
-          <Loader size={16} className="animate-spin" />
-        ) : (
-          <UserPlus size={16} />
-        )}
-        {isProcessing ? 'Sending...' : 'Add Friend'}
-      </button>
-    );
-  };
+  const currentData = activeTab === 'liked-you' ? likedYou : yourLikes;
 
   if (isLoading) {
     return (
       <div className="likes-loading">
         <Loader className="animate-spin" size={40} />
-        <p>Loading your likes...</p>
+        <p>Loading...</p>
       </div>
     );
   }
 
   return (
     <div className="likes-page">
+      {/* Header */}
       <div className="likes-header">
-        <h1>People You Liked</h1>
-        <p>See how you felt about each person and their responses</p>
+        <button className="likes-back-button" onClick={() => navigate(-1)}>
+          <ChevronLeft size={24} />
+        </button>
+        <h1>People who likes you</h1>
+        <p>Respond to Create matches or pass to remove them</p>
       </div>
 
-      {likes.length === 0 ? (
+      {/* Tabs */}
+      <div className="likes-tabs">
+        <button 
+          className={`tab ${activeTab === 'your-likes' ? 'active' : ''}`}
+          onClick={() => setActiveTab('your-likes')}
+        >
+          Your Likes
+        </button>
+        <button 
+          className={`tab ${activeTab === 'liked-you' ? 'active' : ''}`}
+          onClick={() => setActiveTab('liked-you')}
+        >
+          Like You
+        </button>
+      </div>
+
+      {/* Cards List */}
+      {currentData.length === 0 ? (
         <div className="no-likes">
-          <Heart size={80} className="text-gray-400" />
+          <Heart size={80} className="no-likes-icon" />
           <h2>No likes yet</h2>
-          <p>Start swiping to like people!</p>
+          <p>Keep swiping to find your perfect match!</p>
         </div>
       ) : (
-        <div className="likes-grid">
-          {likes.map((user) => (
-            <div key={user._id} className={`like-card ${user.isMatch ? 'matched' : ''}`}>
-              <div className="like-image">
+        <div className="likes-container">
+          {currentData.map((user) => {
+            const age = getAge(user.dateOfBirth);
+            
+            return (
+              <div key={user._id} className="like-card">
+                {/* Background Image */}
                 <img 
-                  src={user.profilePic || (user.gender === 'male' ? '/default-male-avatar.png' : '/default-female-avatar.png')} 
-                  alt={user.fullName}
+                  src={user.profilePic || user.image || 'https://via.placeholder.com/400x500/B8578D/ffffff?text=No+Photo'} 
+                  alt={user.fullName || user.firstName}
+                  className="like-background-image"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = 'https://via.placeholder.com/400x500/B8578D/ffffff?text=No+Photo';
+                  }}
                 />
                 
-                {/* Match indicator */}
-                {user.isMatch && (
-                  <div className="match-indicator">
-                    <Heart size={16} fill="white" />
-                    MATCH!
-                  </div>
-                )}
-              </div>
-              
-              <div className="like-info">
-                <h3>{user.fullName}</h3>
-                <p>{user.age && `${user.age} years old`}</p>
-                {user.location && <p>📍 {user.location}</p>}
+                {/* Gradient Overlay */}
+                <div className="like-overlay"></div>
                 
-                {/* YOUR like type - prominently displayed */}
-                <div className="like-actions-section">
-                  {getYourLikeTypeBadge(user)}
-                  
-                  {/* Their response if matched */}
-                  {getTheirResponseBadge(user)}
+                {/* Top Content - Badge */}
+                <div className="like-top-content">
+                  <div className="like-badge">
+                    <Heart size={14} fill="white" />
+                    <span>Your Crush</span>
+                  </div>
                 </div>
                 
-                {user.bio && <p className="bio">{user.bio}</p>}
-                
-                {user.interests && user.interests.length > 0 && (
-                  <div className="interests">
-                    {user.interests.slice(0, 3).map((interest, index) => (
-                      <span key={index} className="interest-tag">{interest}</span>
-                    ))}
+                {/* Bottom Content - User Info */}
+                <div className="like-bottom-content">
+                  <div className="like-name-row">
+                    <h3 className="like-name">{user.fullName || user.firstName}</h3>
+                    <svg className="like-verified-icon" viewBox="0 0 24 24" fill="none">
+                      <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#FF6B9D" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="#FF6B9D"/>
+                    </svg>
+                    <div className="like-age">
+                      <img src={bdImage} alt="Birthday" style={{ width: '16px', height: '16px' }} />
+                      <span>{age || 22}</span>
+                    </div>
                   </div>
-                )}
-                
-                <p className="status-date">
-                  {getStatusMessage(user)}
-                </p>
-              </div>
 
-              <div className="like-actions">
-                {getFriendButton(user)}
-                
-                <button 
-                  className="message-btn"
-                  onClick={() => handleMessage(user)}
-                >
-                  <MessageCircle size={16} />
-                  Message
-                </button>
+                  {user.profession && (
+                    <p className="like-profession">{user.profession}</p>
+                  )}
+
+                  {user.bio && (
+                    <p className="like-bio">{user.bio}</p>
+                  )}
+
+                  {user.lifeGoal && (
+                    <p className="like-quote">"{user.lifeGoal}"</p>
+                  )}
+
+                  {user.interests && user.interests.length > 0 && (
+                    <>
+                      <p className="like-interests-title">Interests</p>
+                      <div className="like-interests">
+                        {user.interests.slice(0, 4).map((interest, index) => (
+                          <div key={index} className="like-interest-chip">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                              <circle cx="12" cy="12" r="10"/>
+                            </svg>
+                            <span>{interest}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
+
+                  {/* Action Buttons - Only for "Liked You" tab */}
+                  {activeTab === 'liked-you' && (
+                    <div className="like-action-buttons">
+                      <button 
+                        className="crush-back-button"
+                        onClick={() => handleCrushBack(user._id)}
+                      >
+                        <Heart size={18} fill="white" />
+                        Crush Back
+                      </button>
+                      <button 
+                        className="pass-button"
+                        onClick={() => handlePass(user._id)}
+                      >
+                        Pass
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Floating Add Friend Button */}
+                <div className="like-floating-friend-btn-wrapper">
+                  {friends.has(user._id) ? (
+                    <button className="like-floating-friend-btn friends">
+                      <UserCheck size={20} />
+                      <span>Friends</span>
+                    </button>
+                  ) : sentRequests.has(user._id) ? (
+                    <button className="like-floating-friend-btn pending" disabled>
+                      <Clock size={20} />
+                      <span>Pending</span>
+                    </button>
+                  ) : (
+                    <button 
+                      className="like-floating-friend-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSendFriendRequest(user._id, user.fullName || user.firstName);
+                      }}
+                      disabled={processingRequest.has(user._id)}
+                    >
+                      {processingRequest.has(user._id) ? (
+                        <>
+                          <Loader size={20} className="animate-spin" />
+                          <span>Sending...</span>
+                        </>
+                      ) : (
+                        <>
+                          <UserPlus size={20} />
+                          <span>Add Friend</span>
+                        </>
+                      )}
+                    </button>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
+
+      {/* Bottom Navigation */}
+      <nav className="bottom-nav">
+        <button 
+          className={`nav-item ${isActiveRoute('/dashboard/swipe') ? 'active' : ''}`}
+          onClick={() => navigate('/dashboard/swipe')}
+        >
+          <Compass size={24} className="nav-item-icon" />
+          <span className="nav-item-label">Discovery</span>
+        </button>
+        
+        <button 
+          className={`nav-item ${isActiveRoute('/dashboard/matches') ? 'active' : ''}`}
+          onClick={() => navigate('/dashboard/matches')}
+        >
+          <Heart size={24} className="nav-item-icon" fill={isActiveRoute('/dashboard/matches') ? '#DA0271' : 'none'} />
+          <span className="nav-item-label">Matches</span>
+        </button>
+        
+        <button 
+          className={`nav-item ${isActiveRoute('/dashboard/likes') ? 'active' : ''}`}
+          onClick={() => navigate('/dashboard/likes')}
+        >
+          <ThumbsUp size={24} className="nav-item-icon" />
+          <span className="nav-item-label">Like</span>
+        </button>
+        
+        <button 
+          className={`nav-item ${isActiveRoute('/dashboard/profile') ? 'active' : ''}`}
+          onClick={() => navigate('/dashboard/profile')}
+        >
+          <User size={24} className="nav-item-icon" />
+          <span className="nav-item-label">Profile</span>
+        </button>
+      </nav>
     </div>
   );
 };

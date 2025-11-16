@@ -1,0 +1,386 @@
+/* Edit Profile Page - Main List View */
+.edit-profile-page {
+  min-height: 100vh;
+  /* background: linear-gradient(180deg, #B8578D 0%, #A97DB8 100%); */
+  padding-bottom: 60px;
+  font-family: 'Karla', sans-serif;
+}
+
+/* Header */
+.edit-profile-header {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  position: relative;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  color: #FFFFFF;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  position: absolute;
+  left: 20px;
+}
+
+.edit-profile-title {
+  font-family: 'Karla', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin: 0 auto;
+}
+
+/* Profile Image Section - Floating */
+.edit-profile-image-section {
+  background: transparent;
+
+  max-width: 400px;
+  margin: 0 auto;
+   margin-bottom: 20px;
+  position: relative;
+  z-index: 2;
+}
+
+.edit-profile-image-container {
+  width: 100%;
+  max-width: 400px;
+  height: 300px;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  background: #FFFFFF;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  margin: 0 auto;
+}
+
+.edit-profile-image {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+}
+
+.edit-profile-image-placeholder {
+  width: 100%;
+  height: 100%;
+  background: #E0E0E0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.edit-photo-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-family: 'Karla', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  backdrop-filter: blur(10px);
+  transition: background 0.3s;
+}
+
+.edit-photo-badge:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+/* Edit Section */
+.edit-section {
+  background: #FFFFFF;
+  border-radius: 12px;
+  padding: 24px;
+ 
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  position: relative;
+  z-index: 1;
+}
+
+.edit-section.separate {
+ margin: auto;
+ margin: 16px auto;
+}
+
+.edit-section-title {
+  font-family: 'Karla', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #000000;
+  margin: 0 0 16px 0;
+}
+
+.edit-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.edit-icon-button {
+  background: none;
+  border: none;
+  color: #DA0271;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  transition: background-color 0.3s;
+}
+
+.edit-icon-button:hover {
+  background: rgba(218, 2, 113, 0.1);
+}
+
+/* Edit Item */
+.edit-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+
+.edit-item:last-child {
+  border-bottom: none;
+}
+
+.edit-item:hover {
+  opacity: 0.7;
+}
+
+.edit-item-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.edit-item-label {
+  font-family: 'Karla', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #000000;
+}
+
+.edit-item-action {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.edit-text {
+  font-family: 'Karla', sans-serif;
+  font-size: 13px;
+  color: #DA0271;
+  font-weight: 500;
+}
+
+.edit-value {
+  font-family: 'Karla', sans-serif;
+  font-size: 13px;
+  color: #999999;
+  margin-right: 4px;
+}
+
+/* Interests Edit Grid */
+.interests-edit-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.interest-chip {
+  background: transparent;
+  border: .5px solid #DA0271;
+  border-radius: 20px;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  user-select: none;
+  font-family: 'Karla', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: #DA0271;
+}
+
+.interest-chip:hover {
+  background: rgba(218, 2, 113, 0.12);
+  border-color: rgba(218, 2, 113, 0.3);
+}
+
+.interest-chip.selected {
+  background: #DA0271;
+  border-color: #DA0271;
+  color: #FFFFFF;
+}
+
+.interest-chip-checkbox {
+  width: 18px;
+  height: 18px;
+  border: 2px solid currentColor;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.interest-chip.selected .interest-chip-checkbox {
+  background: #FFFFFF;
+  border-color: #FFFFFF;
+}
+
+.interest-chip-checkbox svg {
+  display: none;
+}
+
+.interest-chip.selected .interest-chip-checkbox svg {
+  display: block;
+}
+
+.interest-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+  display: none;
+}
+
+.interest-name {
+  font-family: 'Karla', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Bio Textarea */
+.bio-textarea-edit {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  padding: 16px;
+  font-family: 'Karla', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #000000;
+  outline: none;
+  resize: vertical;
+  min-height: 120px;
+  transition: border-color 0.3s;
+}
+
+.bio-textarea-edit:focus {
+  border-color: #DA0271;
+}
+
+.bio-textarea-edit::placeholder {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.bio-char-count-edit {
+  font-family: 'Karla', sans-serif;
+  font-size: 12px;
+  color: #999999;
+  text-align: right;
+  margin-top: 8px;
+}
+
+/* Lifestyle Preview */
+.lifestyle-preview {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.lifestyle-preview-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.lifestyle-preview-item:last-child {
+  border-bottom: none;
+}
+
+.lifestyle-preview-label {
+  font-family: 'Karla', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #666666;
+}
+
+.lifestyle-preview-value {
+  font-family: 'Karla', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #000000;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+ 
+
+  
+
+
+
+ 
+
+  .interests-edit-grid {
+    gap: 8px;
+  }
+}
+
+/* Custom interest input styles */
+.custom-interest-input {
+  flex: 1;
+  min-height: auto !important;
+  padding: 12px 16px !important;
+}
+
+.add-interest-btn {
+  background: #DA0271;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 12px;
+  padding: 0 20px;
+  font-family: 'Karla', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.3s;
+}
+
+.add-interest-btn:hover {
+  opacity: 0.9;
+}
+
+.add-interest-btn:active {
+  transform: scale(0.98);
+}

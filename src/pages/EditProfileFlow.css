@@ -1,0 +1,225 @@
+/* Edit Profile Flow - Full Screen Edit Pages */
+.edit-flow-page {
+  min-height: 100vh;
+  /* background: linear-gradient(180deg, #B8578D 0%, #9B7DB8 100%); */
+  font-family: 'Karla', sans-serif;
+  padding-bottom: 60px;
+}
+
+/* Header */
+.edit-flow-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: transparent;
+}
+
+.edit-flow-back {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.edit-flow-save {
+  background: #FFFFFF;
+  color: #B8578D;
+  border: none;
+  border-radius: 24px;
+  padding: 10px 28px;
+  font-family: 'Karla', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+
+.edit-flow-save:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.edit-flow-save:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Container */
+.edit-flow-container {
+  padding: 40px 24px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.edit-flow-title {
+  font-family: 'Karla', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin: 0 0 40px 0;
+  line-height: 1.3;
+}
+
+/* Input Styles */
+.edit-flow-input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  padding: 18px 20px;
+  font-family: 'Karla', sans-serif;
+  font-size: 16px;
+  color: #FFFFFF;
+  outline: none;
+  transition: all 0.3s;
+  backdrop-filter: blur(10px);
+}
+
+.edit-flow-input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.edit-flow-input:focus {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Date of Birth Inputs */
+.dob-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.2fr;
+  gap: 12px;
+}
+
+.dob-input {
+  text-align: center;
+}
+
+/* Gender Options */
+.edit-flow-options {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.edit-flow-option {
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  backdrop-filter: blur(10px);
+}
+
+.edit-flow-option.selected {
+  background: rgba(218, 2, 113, 0.4);
+  border-color: rgba(218, 2, 113, 0.6);
+}
+
+.edit-flow-option span {
+  font-family: 'Karla', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: #FFFFFF;
+}
+
+.radio-circle {
+  width: 24px;
+  height: 24px;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+}
+
+.edit-flow-option.selected .radio-circle {
+  border-color: #DA0271;
+  background: #DA0271;
+}
+
+.radio-dot {
+  width: 10px;
+  height: 10px;
+  background: #FFFFFF;
+  border-radius: 50%;
+}
+
+/* Phone Input */
+.phone-input-container {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.country-code {
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  padding: 18px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  backdrop-filter: blur(10px);
+  color: #FFFFFF;
+  font-family: 'Karla', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.flag-icon {
+  width: 24px;
+  height: 16px;
+  object-fit: cover;
+  border-radius: 2px;
+}
+
+.phone-input {
+  flex: 1;
+}
+
+/* Lifestyle Container */
+.lifestyle-container {
+  padding: 20px 24px 80px;
+}
+
+.lifestyle-field {
+  margin-bottom: 24px;
+}
+
+.lifestyle-label {
+  display: block;
+  font-family: 'Karla', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin-bottom: 10px;
+  opacity: 0.9;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .edit-flow-title {
+    font-size: 24px;
+  }
+
+  .edit-flow-container {
+    padding: 30px 20px;
+  }
+
+  .dob-inputs {
+    gap: 8px;
+  }
+}

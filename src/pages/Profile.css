@@ -1,0 +1,684 @@
+/* Profile Page Styles */
+.profile-page,
+.edit-profile-page {
+  min-height: 100vh;
+  background: var(--background-color);
+  padding-bottom: 40px;
+  font-family: 'Karla', var(--primary-font);
+}
+
+/* Profile Header */
+.profile-header {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  position: relative;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.back-button-profile {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  position: absolute;
+  left: 20px;
+}
+
+.profile-title {
+  font-family: 'Karla', var(--title-font);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--primary-color);
+  margin: 0 auto;
+}
+
+/* Profile Image Section */
+.profile-image-section {
+  background: var(--surface-color);
+  border-radius: 12px 12px 0 0;
+  padding: 24px 24px 0 24px;
+  max-width: 400px;
+  margin: 6px 6px 0 auto;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.profile-image-container {
+  width: 100%;
+  height: 290px;
+  border-radius: 24px;
+  overflow: hidden;
+  position: relative;
+}
+
+.profile-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-image-placeholder {
+  width: 100%;
+  height: 100%;
+  background: #E0E0E0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Edit Photo Button on View Page */
+.edit-photo-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.5);
+  color: var(--primary-color);
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-family: 'Karla', var(--primary-font);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  backdrop-filter: blur(10px);
+}
+
+/* Profile Section - Connected to image */
+.profile-section {
+  background: var(--surface-color);
+  border-radius: 12px;
+  padding: 24px;
+  margin: 0 20px 16px auto;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.profile-section.first-section {
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+  margin-top: 0;
+}
+
+.profile-section.separate-section {
+  border-radius: 12px;
+  margin-top: 16px;
+}
+
+.section-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 20px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.section-edit-button {
+  background: none;
+  border: none;
+  color: var(--pink-color);
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  transition: background-color 0.3s;
+}
+
+.section-edit-button:hover {
+  background: rgba(218, 2, 113, 0.1);
+}
+
+/* Profile Item */
+.profile-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+
+.profile-item:last-child {
+  border-bottom: none;
+}
+
+.profile-item:hover {
+  opacity: 0.8;
+}
+
+.profile-item-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.profile-item-label {
+  font-family: 'Karla', var(--primary-font);
+  font-size: 14px;
+  color: var(--text-color);
+}
+
+.edit-button {
+  background: none;
+  border: none;
+  color: var(--text-light);
+  font-family: 'Karla', var(--primary-font);
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: color 0.3s;
+}
+
+.edit-button:hover {
+  color: var(--pink-color);
+}
+
+/* Interests */
+.interests-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.interest-tag {
+  background: rgba(218, 2, 113, 0.1);
+  border: 1px solid rgba(218, 2, 113, 0.3);
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-family: 'Karla', var(--primary-font);
+  font-size: 14px;
+  color: var(--pink-color);
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.interest-tag:hover,
+.interest-tag.active {
+  background: var(--button-background-color);
+  color: var(--primary-color);
+  border-color: transparent;
+}
+
+.no-data {
+  font-family: 'Karla', var(--primary-font);
+  font-size: 14px;
+  color: var(--text-light);
+  font-style: italic;
+}
+
+/* Bio */
+.bio-text {
+  font-family: 'Karla', var(--primary-font);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-color);
+}
+
+/* Traits Grid */
+.traits-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.trait-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.trait-label {
+  font-family: 'Karla', var(--primary-font);
+  font-size: 12px;
+  color: var(--text-light);
+}
+
+.trait-input {
+  font-family: 'Karla', var(--primary-font);
+  font-size: 14px;
+  color: var(--text-color);
+  background: #ffffff10;
+  border: 1px solid var(--border-light);
+  border-radius: 62px;
+  padding: 12px 16px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.trait-input:focus {
+  border-color: var(--pink-color);
+}
+
+.trait-input:read-only {
+  cursor: default;
+}
+
+/* Edit Profile Specific Styles */
+.profile-image-section-edit {
+  background: var(--surface-color);
+  border-radius: 12px 12px 0 0;
+  padding: 24px 24px 0 24px;
+  max-width: 400px;
+  margin: 6px 6px 0 auto;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.profile-image-container-edit {
+  position: relative;
+  width: 100%;
+  height: 290px;
+}
+
+.profile-image-edit {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.profile-image-placeholder-edit {
+  width: 100%;
+  height: 100%;
+  background: #E0E0E0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+}
+
+.edit-photo-button {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.5);
+  color: var(--primary-color);
+  border: none;
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-family: 'Karla', var(--primary-font);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  backdrop-filter: blur(10px);
+}
+
+.edit-photo-button:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+/* Edit Form Groups */
+.edit-form-group {
+  margin-bottom: 20px;
+}
+
+.edit-label {
+  display: block;
+  font-family: 'Karla', var(--primary-font);
+  font-size: 12px;
+  color: var(--text-light);
+  margin-bottom: 8px;
+}
+
+.edit-input,
+.bio-textarea {
+  width: 100%;
+  font-family: 'Karla', var(--primary-font);
+  font-size: 14px;
+  color: var(--text-color);
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  padding: 12px 16px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.edit-input:focus,
+.bio-textarea:focus {
+  border-color: var(--pink-color);
+}
+
+.bio-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* Submit Button */
+.profile-submit-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 0 20px 20px;
+}
+
+.profile-submit-button {
+  width: 100%;
+  height: 56px;
+  background: var(--button-background-color);
+  color: var(--primary-color);
+  border: none;
+  border-radius: 56px;
+  font-family: 'Karla', var(--primary-font);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+
+.profile-submit-button:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.profile-submit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .profile-image-section,
+  .profile-image-section-edit {
+    margin: 6px 6px 0;
+  }
+  
+  .profile-section {
+    margin: 0 6px 6px;
+  }
+  
+  .profile-image-container,
+  .profile-image-container-edit {
+    height: 290px;
+  }
+}
+
+/* New Profile Design Styles */
+.profile-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.more-button {
+  background: none;
+  border: none;
+  color: var(--text-color);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+}
+
+.profile-name-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.profile-name {
+  font-family: 'Karma', serif  !important;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-color);
+  margin: 0;
+}
+
+.profile-badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.profile-age {
+  font-family: 'Karla', sans-serif !important;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.profile-profession {
+  font-family: 'Karla', sans-serif !important;
+  font-size: 14px;
+  color: #000000;
+  margin: 0 0 16px 0;
+}
+
+.profile-bio {
+  font-family: 'Karla', sans-serif !important;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #00000080;
+  margin: 0 0 20px 0;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+}
+
+.bio-char-count {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  background: #8AC9FF;
+  color: white;
+  font-family: 'Karla', sans-serif !important;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+.subsection-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #000000;
+  margin: 0 0 16px 0;
+}
+
+.interest-tag-new {
+  background: transparent;
+  font-family: 'Karla', sans-serif !important;
+  font-size: 13px;
+  color: #666666;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.interest-tag-new svg {
+  flex-shrink: 0;
+}
+
+/* Photos Grid */
+.photos-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.photo-item {
+  position: relative;
+  width: 100%;
+  padding-bottom: 100%; /* 1:1 Aspect Ratio */
+  border-radius: 12px;
+  overflow: hidden;
+  background: #F0F0F0;
+}
+
+.photo-item img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.photo-placeholder svg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Life Goal */
+.life-goal-text {
+  font-family: 'Karma', serif !important;
+  font-size: 18px;
+  font-style: italic;
+  font-weight: 800;
+  color: var(--text-color);
+  text-align: left;
+  margin: 0;
+}
+
+/* Video Container */
+.video-container {
+  position: relative;
+  width: 100%;
+  padding-bottom: 75%; /* 4:3 Aspect Ratio */
+  border-radius: 20px;
+  overflow: hidden;
+  background: #F0F0F0;
+}
+
+.profile-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 20px;
+}
+
+.video-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.video-placeholder svg {
+  opacity: 0.3;
+}
+
+/* Lifestyle Traits Display */
+.lifestyle-traits-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.lifestyle-trait-item {
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lifestyle-trait-label {
+  font-family: 'Karla', sans-serif !important;
+  font-size: 12px;
+  font-weight: 500;
+  color: #999999;
+}
+
+.lifestyle-trait-value {
+  font-family: 'Karla', sans-serif !important;
+  font-size: 14px;
+  font-weight: 600;
+  color: #000000;
+}
+
+/* Profile Info Grid */
+.profile-info-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.profile-info-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+.profile-info-icon {
+  width: 40px;
+  height: 40px;
+  background: rgba(218, 2, 113, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.profile-info-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.profile-info-label {
+  font-family: 'Karla', sans-serif !important;
+  font-size: 12px;
+  font-weight: 500;
+  color: #999999;
+}
+
+.profile-info-value {
+  font-family: 'Karla', sans-serif !important;
+  font-size: 14px;
+  font-weight: 600;
+  color: #000000;
+}
+

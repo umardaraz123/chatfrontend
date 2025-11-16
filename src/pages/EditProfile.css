@@ -1,0 +1,246 @@
+/* Edit Profile Flow Page */
+.edit-flow-page {
+  min-height: 100vh;
+  /* background: linear-gradient(135deg, #DA0271 0%, #7F3A93 100%); */
+  padding: 0;
+  font-family: 'Karla', sans-serif;
+}
+
+/* Header */
+.edit-flow-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 20px;
+  background: transparent;
+}
+
+.edit-flow-back {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.edit-flow-save {
+  background: #FFFFFF;
+  color: #DA0271;
+  border: none;
+  border-radius: 24px;
+  padding: 8px 20px;
+  font-family: 'Karla', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.edit-flow-save:hover {
+  background: rgba(255, 255, 255, 0.95);
+  transform: scale(1.02);
+}
+
+.edit-flow-save:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Container */
+.edit-flow-container {
+  padding: 20px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.edit-flow-title {
+  color: #FFFFFF;
+  font-family: 'Karla', sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 32px;
+  line-height: 1.2;
+}
+
+/* Input Field */
+.edit-flow-input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  padding: 10px 20px;
+  font-family: 'Karla', sans-serif;
+  font-size: 16px;
+  color: #FFFFFF;
+  outline: none;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.edit-flow-input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.edit-flow-input:focus {
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.edit-flow-input:read-only {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Gender Options */
+.edit-flow-options {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.edit-flow-option {
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.edit-flow-option:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.edit-flow-option.selected {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.edit-flow-option span {
+  color: #FFFFFF;
+  font-family: 'Karla', sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.radio-circle {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.edit-flow-option.selected .radio-circle {
+  border-color: #FFFFFF;
+}
+
+.radio-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #DA0271;
+}
+
+/* Date of Birth Inputs */
+.dob-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+}
+
+.dob-input {
+  text-align: center;
+}
+
+/* Phone Number */
+.phone-input-container {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.country-code {
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  padding: 20px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #FFFFFF;
+  font-family: 'Karla', sans-serif;
+  font-size: 16px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.flag-icon {
+  width: 24px;
+  height: 16px;
+  object-fit: cover;
+  border-radius: 2px;
+}
+
+.phone-input {
+  flex: 1;
+}
+
+/* Lifestyle & Traits */
+.lifestyle-container {
+  padding: 20px 24px 80px;
+}
+
+.lifestyle-container .edit-flow-title {
+  font-size: 20px;
+  margin-bottom: 16px;
+}
+
+.lifestyle-field {
+  margin-bottom: 20px;
+}
+
+.lifestyle-label {
+  display: block;
+  color: rgba(255, 255, 255, 0.9);
+  font-family: 'Karla', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  padding-left: 4px;
+}
+
+.lifestyle-field .edit-flow-input {
+  margin-bottom: 0;
+}
+
+/* Select Dropdown Styling */
+.edit-flow-input option {
+  background: #2A2A2A;
+  color: #FFFFFF;
+  padding: 12px;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .edit-flow-title {
+    font-size: 28px;
+  }
+
+  .edit-flow-container {
+    padding:20px;
+  }
+
+  .lifestyle-container {
+    padding: 20px 20px 80px;
+  }
+}

@@ -1,24 +1,18 @@
-// pages/MatchesPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useAuthStore } from '../store/useAuthStore';
-import { useNavigate } from 'react-router-dom';
-import { Heart, MessageCircle, Loader, Calendar, MapPin, Sparkles } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Heart, MessageCircle, Loader, ChevronLeft, User, Compass, ThumbsUp } from 'lucide-react';
 import toast from 'react-hot-toast';
+import './MatchesPage.css';
+import bdImage from '../images/bd.png';
 
 const MatchesPage = () => {
   const { getMatches, setSelectedUser } = useAuthStore();
   const navigate = useNavigate();
+  const location = useLocation();
   
   const [matches, setMatches] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-
-  // Like type configurations
-  const likeTypeConfig = {
-    crush: { emoji: '💘', label: 'Crush', color: '#ec4899', bgColor: '#fdf2f8' },
-    intrigued: { emoji: '😍', label: 'Intrigued', color: '#f59e0b', bgColor: '#fffbeb' },
-    curious: { emoji: '🤔', label: 'Curious', color: '#8b5cf6', bgColor: '#faf5ff' },
-    fun: { emoji: '😂', label: 'Looks Fun', color: '#10b981', bgColor: '#f0fdf4' }
-  };
 
   useEffect(() => {
     loadMatches();
@@ -42,34 +36,20 @@ const MatchesPage = () => {
     navigate('/dashboard/chat');
   };
 
-  const getMatchTypeDisplay = (match) => {
-    const yourType = match.yourLikeType;
-    const theirType = match.theirLikeType;
-    
-    if (yourType === theirType && yourType && likeTypeConfig[yourType]) {
-      const config = likeTypeConfig[yourType];
-      return (
-        <div className="mutual-feeling" style={{ backgroundColor: config.bgColor, color: config.color }}>
-          <span className="feeling-emoji">{config.emoji}</span>
-          <span>Mutual {config.label}!</span>
-        </div>
-      );
+  const getAge = (dateOfBirth) => {
+    if (!dateOfBirth) return null;
+    const dob = new Date(dateOfBirth);
+    const today = new Date();
+    let age = today.getFullYear() - dob.getFullYear();
+    const monthDiff = today.getMonth() - dob.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+      age--;
     }
-    
-    return (
-      <div className="different-feelings">
-        {yourType && likeTypeConfig[yourType] && (
-          <div className="your-feeling" style={{ color: likeTypeConfig[yourType].color }}>
-            {likeTypeConfig[yourType].emoji} You: {likeTypeConfig[yourType].label}
-          </div>
-        )}
-        {theirType && likeTypeConfig[theirType] && (
-          <div className="their-feeling" style={{ color: likeTypeConfig[theirType].color }}>
-            {likeTypeConfig[theirType].emoji} Them: {likeTypeConfig[theirType].label}
-          </div>
-        )}
-      </div>
-    );
+    return age;
+  };
+
+  const isActiveRoute = (path) => {
+    return location.pathname === path;
   };
 
   if (isLoading) {
@@ -83,88 +63,143 @@ const MatchesPage = () => {
 
   return (
     <div className="matches-page">
+      {/* Header */}
       <div className="matches-header">
-        <div className="header-title">
-          <Sparkles size={24} className="sparkle-icon" />
-          <h1>Your Matches</h1>
-          <Sparkles size={24} className="sparkle-icon" />
-        </div>
-        <p>People who liked you back!</p>
+        <button className="matches-back-button" onClick={() => navigate(-1)}>
+          <ChevronLeft size={24} />
+        </button>
+        <h1>Your Matches</h1>
+        <p>People Who Liked You Back</p>
       </div>
 
+      {/* Matches List */}
       {matches.length === 0 ? (
         <div className="no-matches">
-          <Heart size={80} className="text-pink-400" />
+          <Heart size={80} className="no-matches-icon" />
           <h2>No matches yet</h2>
           <p>Keep swiping to find your perfect match!</p>
         </div>
       ) : (
-        <div className="likes-grid">
-          {matches.map((match) => (
-            <div key={match._id} className="like-card">
-              {/* <div className="match-header">
-                <span className="match-date">
-                  <Calendar size={14} />
-                  Matched {new Date(match.matchedAt).toLocaleDateString()}
-                </span>
-                <div className="match-indicator">
-                  <Heart size={16} fill="white" />
-                  MATCH
-                </div>
-              </div> */}
-
-              <div className="user-info">
-                <div className="like-image">
-                  <img 
-                  src={match.user.profilePic || '/default-avatar.png'} 
-                  alt={match.user.fullName}
-                  className="match-avatar"
+        <div className="matches-container">
+          {matches.map((match) => {
+            const user = match.user;
+            const age = getAge(user.dateOfBirth);
+            
+            // Debug logging
+            console.log('Match user data:', {
+              fullName: user.fullName,
+              profilePic: user.profilePic,
+              image: user.image
+            });
+            
+            return (
+              <div key={match._id} className="match-card">
+                {/* Background Image */}
+                <img 
+                  src={user.profilePic || user.image || 'https://via.placeholder.com/400x500/B8578D/ffffff?text=No+Photo'} 
+                  alt={user.fullName || user.firstName}
+                  className="match-background-image"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = 'https://via.placeholder.com/400x500/B8578D/ffffff?text=No+Photo';
+                  }}
                 />
+                
+                {/* Gradient Overlay */}
+                <div className="match-overlay"></div>
+                
+                {/* Top Content - Badge and Chat Icon */}
+                <div className="match-top-content">
+                  <div className="match-badge">
+                    <Heart size={14} fill="white" />
+                    <span>Mutual Crush</span>
+                  </div>
+                  <div className="match-chat-icon" onClick={() => handleMessage(user)}>
+                    <MessageCircle size={20} color="white" />
+                  </div>
                 </div>
-                <div className="like-info">
-                  <h3>{match.user.fullName}</h3>
-                  {match.user.age && (
-                    <p className="user-details">
-                      {match.user.age} years old
-                     
-                    </p>
-                  )}
-                  {match.user.location && (
-                    <p className="user-details">{match.user.location}</p>
-                    )}
-
-                  {/* Show how you both felt */}
-                  <div className="match-feelings">
-                    {getMatchTypeDisplay(match)}
+                
+                {/* Bottom Content - User Info */}
+                <div className="match-bottom-content">
+                  <div className="match-name-row">
+                    <h3 className="match-name">{user.fullName || user.firstName}</h3>
+                    <svg className="match-verified-icon" viewBox="0 0 24 24" fill="none">
+                      <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#FF6B9D" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="#FF6B9D"/>
+                    </svg>
+                    <div className="match-age">
+                      <img src={bdImage} alt="Birthday" style={{ width: '16px', height: '16px' }} />
+                      <span>{age || 22}</span>
+                    </div>
                   </div>
 
-                  {match.user.bio && (
-                    <p className="bio">{match.user.bio}</p>
+                  {user.profession && (
+                    <p className="match-profession">{user.profession}</p>
                   )}
 
-                  {match.user.interests && match.user.interests.length > 0 && (
-                    <div className="interests">
-                      {match.user.interests.slice(0, 3).map((interest, index) => (
-                        <span key={index} className="interest-tag">{interest}</span>
-                      ))}
-                    </div>
+                  {user.bio && (
+                    <p className="match-bio">{user.bio}</p>
+                  )}
+
+                  {user.lifeGoal && (
+                    <p className="match-quote">"{user.lifeGoal}"</p>
+                  )}
+
+                  {user.interests && user.interests.length > 0 && (
+                    <>
+                      <p className="match-interests-title">Interests</p>
+                      <div className="match-interests">
+                        {user.interests.slice(0, 4).map((interest, index) => (
+                          <div key={index} className="match-interest-chip">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                              <circle cx="12" cy="12" r="10"/>
+                            </svg>
+                            <span>{interest}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </>
                   )}
                 </div>
               </div>
-
-              <div className="match-actions">
-                <button 
-                  className="message-btn"
-                  onClick={() => handleMessage(match.user)}
-                >
-                  <MessageCircle size={18} />
-                  Start Chatting
-                </button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
+
+      {/* Bottom Navigation */}
+      <nav className="bottom-nav">
+        <button 
+          className={`nav-item ${isActiveRoute('/dashboard/swipe') ? 'active' : ''}`}
+          onClick={() => navigate('/dashboard/swipe')}
+        >
+          <Compass size={24} className="nav-item-icon" />
+          <span className="nav-item-label">Discovery</span>
+        </button>
+        
+        <button 
+          className={`nav-item ${isActiveRoute('/dashboard/matches') ? 'active' : ''}`}
+          onClick={() => navigate('/dashboard/matches')}
+        >
+          <Heart size={24} className="nav-item-icon" fill={isActiveRoute('/dashboard/matches') ? '#DA0271' : 'none'} />
+          <span className="nav-item-label">Matches</span>
+        </button>
+        
+        <button 
+          className={`nav-item ${isActiveRoute('/dashboard/likes') ? 'active' : ''}`}
+          onClick={() => navigate('/dashboard/likes')}
+        >
+          <ThumbsUp size={24} className="nav-item-icon" />
+          <span className="nav-item-label">Like</span>
+        </button>
+        
+        <button 
+          className={`nav-item ${isActiveRoute('/dashboard/profile') ? 'active' : ''}`}
+          onClick={() => navigate('/dashboard/profile')}
+        >
+          <User size={24} className="nav-item-icon" />
+          <span className="nav-item-label">Profile</span>
+        </button>
+      </nav>
     </div>
   );
 };

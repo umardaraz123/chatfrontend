@@ -29,85 +29,139 @@ const DashboardLayout = () => {
       {/* Fixed Sidebar */}
       {showMenu && <div className="left">
         <div className="close-icon" onClick={() => setShowMenu(false)}>
-         
-            <IoCloseOutline />
-          
+          <IoCloseOutline />
         </div>
 
-        <div className="top">
-          <div className="user-info">
-            {!userDetails?.profilePic ? <div className="user-icon">
-              <UserIcon />
-            </div> : <img src={userDetails?.profilePic} alt="Profile" width="50px" height='50px' />}
-
-            <h2 className='user-name'>{userDetails?.firstName}</h2>
+        <div className="menu-container">
+          {/* Profile Section */}
+          <div className="menu-profile-section">
+            <div className="menu-profile-image">
+              {!userDetails?.profilePic ? (
+                <div className="user-icon">
+                  <UserIcon size={40} />
+                </div>
+              ) : (
+                <img src={userDetails?.profilePic} alt="Profile" />
+              )}
+            </div>
+            <h2 className="menu-profile-name">{userDetails?.fullName || userDetails?.firstName || 'User'}</h2>
+            <p className="menu-profile-email">{userDetails?.email || ''}</p>
           </div>
-          <ul className='links'>
-            <li onClick={() => setShowMenu(false)}><Link
-              to="/dashboard"
-              className={location.pathname === "/dashboard" ? "active" : ""}
-            >
-          <LayoutDashboardIcon />     Dashboard
-            </Link></li>
-            <li onClick={() => setShowMenu(false)}><Link
-              to="/dashboard/profile"
-              className={location.pathname === "/dashboard/profile" ? "active" : ""}
-            >
-             <GiEgyptianProfile /> Profile
-            </Link></li>
-            <li onClick={() => setShowMenu(false)}><Link
-              to="/dashboard/chat"
-              className={location.pathname === "/dashboard/chat" ? "active" : ""}
-            >
-           <MessageCircleCode />   Messages
-            </Link></li>
-            
-         <li onClick={() => setShowMenu(false)}><Link
-              to="/dashboard/swipe"
-              className={location.pathname === "/dashboard/swipe" ? "active" : ""}
-            >
-           <HeartHandshake />   Discover
-            </Link></li>
-            <li onClick={() => setShowMenu(false)}>
-  <Link 
-    to="/dashboard/friends" 
-    className={location.pathname === "/dashboard/friends" ? "active" : ""}
-  >
-    <Users size={20} />
-    <span>Friends</span>
-  </Link>
-</li>
 
-           <li onClick={() => setShowMenu(false)}>
-             <Link to="/dashboard/matches" className="nav-item">
-  <Users size={20} />
-  <span>Matches</span>
-</Link>
-           </li>
-<li onClick={() => setShowMenu(false)}>
-<Link to="/dashboard/likes" className="nav-item">
-  <Heart size={20} />
-  <span>My Likes</span>
-</Link></li>
-<li onClick={() => setShowMenu(false)}>
-<Link to="/dashboard/dropbox" className="nav-item">
-  <Heart size={20} />
-  <span>My DropBox</span>
-</Link></li>
-            {/* <li onClick={() => setShowMenu(false)}><Link
-              to="/dashboard/find-love-one"
-              className={location.pathname === "/dashboard/find-love-one" ? "active" : ""}
+          {/* Menu Items */}
+          <nav className="menu-nav">
+            <Link 
+              to="/dashboard/profile/edit" 
+              className="menu-item"
+              onClick={() => setShowMenu(false)}
             >
-           <HeartHandshake />   Find Love
-            </Link></li> */}
+              <div className="menu-item-left">
+                <div className="menu-item-icon">
+                  <User2Icon size={20} />
+                </div>
+                <span className="menu-item-text">Edit Profile</span>
+              </div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </Link>
 
-            {/* Add more sidebar links as needed */}
-          </ul>
-        </div>
-        <div className="bottom">
-          <button className="button" onClick={logout}>
-            <LogOut className="size-5" />  Logout
-          </button>
+            <Link 
+              to="/dashboard/chat" 
+              className="menu-item"
+              onClick={() => setShowMenu(false)}
+            >
+              <div className="menu-item-left">
+                <div className="menu-item-icon">
+                  <MessageCircleCode size={20} />
+                </div>
+                <span className="menu-item-text">Messages</span>
+              </div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </Link>
+
+            <Link 
+              to="/dashboard/swipe" 
+              className="menu-item"
+              onClick={() => setShowMenu(false)}
+            >
+              <div className="menu-item-left">
+                <div className="menu-item-icon">
+                  <HeartHandshake size={20} />
+                </div>
+                <span className="menu-item-text">Discover</span>
+              </div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </Link>
+
+            <Link 
+              to="/dashboard/friends" 
+              className="menu-item"
+              onClick={() => setShowMenu(false)}
+            >
+              <div className="menu-item-left">
+                <div className="menu-item-icon">
+                  <Users size={20} />
+                </div>
+                <span className="menu-item-text">Friends</span>
+              </div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </Link>
+
+            <Link 
+              to="/dashboard/matches" 
+              className="menu-item"
+              onClick={() => setShowMenu(false)}
+            >
+              <div className="menu-item-left">
+                <div className="menu-item-icon">
+                  <Heart size={20} />
+                </div>
+                <span className="menu-item-text">Matches</span>
+              </div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </Link>
+
+            <Link 
+              to="/dashboard/likes" 
+              className="menu-item"
+              onClick={() => setShowMenu(false)}
+            >
+              <div className="menu-item-left">
+                <div className="menu-item-icon">
+                  <HeartHandshake size={20} />
+                </div>
+                <span className="menu-item-text">My Likes</span>
+              </div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </Link>
+
+            <Link 
+              to="/dashboard/dropbox" 
+              className="menu-item"
+              onClick={() => setShowMenu(false)}
+            >
+              <div className="menu-item-left">
+                <div className="menu-item-icon">
+                  <LayoutDashboardIcon size={20} />
+                </div>
+                <span className="menu-item-text">My DropBox</span>
+              </div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </Link>
+          </nav>
         </div>
       </div>}
 

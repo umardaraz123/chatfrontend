@@ -1,0 +1,204 @@
+/* Dashboard Edit Page */
+.dashboard-edit-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #DA0271 0%, #7F3A93 50%, #5B5B9E 100%);
+  padding-bottom: 80px;
+}
+
+/* Profile Image Section with Edit Button */
+.profile-image-section-editable {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 0 30px;
+  position: relative;
+}
+
+.profile-image-section-editable .profile-image-container {
+  position: relative;
+}
+
+.edit-photo-overlay-button {
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.7);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-family: 'Karla', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.edit-photo-overlay-button:hover {
+  background: rgba(0, 0, 0, 0.85);
+  transform: translateX(-50%) scale(1.05);
+}
+
+.edit-photo-overlay-button svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Section Header with Edit Icon */
+.section-header-dashboard {
+  margin-bottom: 16px;
+}
+
+.section-header-with-edit {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.section-edit-icon {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #DA0271;
+  transition: all 0.3s ease;
+}
+
+.section-edit-icon:hover {
+  transform: scale(1.1);
+}
+
+/* Dashboard Field Items */
+.dashboard-field {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.dashboard-field:hover {
+  background: rgba(255, 255, 255, 0.02);
+  padding-left: 8px;
+  padding-right: 8px;
+  margin-left: -8px;
+  margin-right: -8px;
+  border-radius: 12px;
+}
+
+.dashboard-field:last-child {
+  border-bottom: none;
+}
+
+.dashboard-field-icon {
+  width: 40px;
+  height: 40px;
+  background: rgba(218, 2, 113, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dashboard-field-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dashboard-field-label {
+  font-family: 'Karla', sans-serif;
+  font-size: 12px;
+  color: #999999;
+  font-weight: 400;
+}
+
+.dashboard-field-value {
+  font-family: 'Karla', sans-serif;
+  font-size: 16px;
+  color: #000000;
+  font-weight: 500;
+}
+
+.dashboard-field-edit {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #999999;
+  font-family: 'Karla', sans-serif;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.dashboard-field-edit:hover {
+  color: #DA0271;
+}
+
+.dashboard-field-edit span {
+  display: inline-block;
+}
+
+/* Lifestyle Grid */
+.lifestyle-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.lifestyle-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.lifestyle-label {
+  font-family: 'Karla', sans-serif;
+  font-size: 12px;
+  color: #999999;
+  font-weight: 400;
+}
+
+.lifestyle-value {
+  font-family: 'Karla', sans-serif;
+  font-size: 14px;
+  color: #000000;
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .dashboard-field {
+    padding: 14px 0;
+  }
+
+  .dashboard-field-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .dashboard-field-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .lifestyle-grid {
+    grid-template-columns: 1fr;
+  }
+}

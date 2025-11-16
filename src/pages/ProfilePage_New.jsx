@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, MoreVertical, Mail, Phone, MapPin, Users, Heart, Calendar } from 'lucide-react';
 import bdImage from '../images/bd.png';
 import './Profile.css';
 
-const Dashboard = () => {
+const ProfilePage = () => {
   const navigate = useNavigate();
   const { getUserDetail, isFetchingUserDetails, userDetails } = useAuthStore();
 
@@ -35,7 +35,7 @@ const Dashboard = () => {
         <button className="back-button-profile" onClick={() => navigate(-1)}>
           <ChevronLeft size={24} />
         </button>
-        <h1 className="profile-title">Dashboard</h1>
+        <h1 className="profile-title">Profile</h1>
       </div>
 
       <div className="profile-image-section">
@@ -53,6 +53,9 @@ const Dashboard = () => {
       <div className="profile-section first-section">
         <div className="profile-detail-header">
           <h2 className="section-title">Personal Detail</h2>
+          <button className="more-button" onClick={() => navigate('/dashboard/profile/edit')}>
+            <MoreVertical size={20} />
+          </button>
         </div>
 
         <div className="profile-name-row">
@@ -65,9 +68,16 @@ const Dashboard = () => {
 
         <p className="profile-profession">{userDetails?.profession || 'Professional model'}</p>
 
-        <p className="profile-bio">
-          {userDetails?.bio || 'Hopeless romantic who believes in long walks, stargazing, and meaningful conversations. I value kindness, laughter.'}
-        </p>
+        <div style={{ position: 'relative' }}>
+          <p className="profile-bio">
+            {userDetails?.bio || 'Hopeless romantic who believes in long walks, stargazing, and meaningful conversations. I value kindness, laughter.'}
+          </p>
+          {userDetails?.bio && (
+            <span className="bio-char-count">
+              {userDetails.bio.length} Fill × 39
+            </span>
+          )}
+        </div>
 
         <h3 className="subsection-title">Interests</h3>
         <div className="interests-container">
@@ -114,6 +124,94 @@ const Dashboard = () => {
         </div>
       </div>
 
+      {/* Contact & Location Info */}
+      {(userDetails?.email || userDetails?.phoneNumber || userDetails?.location) && (
+        <div className="profile-section separate-section">
+          <h2 className="section-title">Contact & Location</h2>
+          <div className="profile-info-grid">
+            {userDetails?.email && (
+              <div className="profile-info-item">
+                <div className="profile-info-icon">
+                  <Mail size={18} color="#DA0271" />
+                </div>
+                <div className="profile-info-content">
+                  <span className="profile-info-label">Email</span>
+                  <span className="profile-info-value">{userDetails.email}</span>
+                </div>
+              </div>
+            )}
+            {userDetails?.phoneNumber && (
+              <div className="profile-info-item">
+                <div className="profile-info-icon">
+                  <Phone size={18} color="#DA0271" />
+                </div>
+                <div className="profile-info-content">
+                  <span className="profile-info-label">Phone</span>
+                  <span className="profile-info-value">{userDetails.phoneNumber}</span>
+                </div>
+              </div>
+            )}
+            {userDetails?.location && (
+              <div className="profile-info-item">
+                <div className="profile-info-icon">
+                  <MapPin size={18} color="#DA0271" />
+                </div>
+                <div className="profile-info-content">
+                  <span className="profile-info-label">Location</span>
+                  <span className="profile-info-value">{userDetails.location}</span>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Preferences */}
+      {(userDetails?.gender || userDetails?.lookingFor || userDetails?.preferredAgeRange) && (
+        <div className="profile-section separate-section">
+          <h2 className="section-title">Preferences</h2>
+          <div className="profile-info-grid">
+            {userDetails?.gender && (
+              <div className="profile-info-item">
+                <div className="profile-info-icon">
+                  <Users size={18} color="#DA0271" />
+                </div>
+                <div className="profile-info-content">
+                  <span className="profile-info-label">Gender</span>
+                  <span className="profile-info-value">{userDetails.gender}</span>
+                </div>
+              </div>
+            )}
+            {userDetails?.lookingFor && (
+              <div className="profile-info-item">
+                <div className="profile-info-icon">
+                  <Heart size={18} color="#DA0271" />
+                </div>
+                <div className="profile-info-content">
+                  <span className="profile-info-label">Looking For</span>
+                  <span className="profile-info-value">{userDetails.lookingFor}</span>
+                </div>
+              </div>
+            )}
+            {userDetails?.preferredAgeRange && (
+              <div className="profile-info-item">
+                <div className="profile-info-icon">
+                  <Calendar size={18} color="#DA0271" />
+                </div>
+                <div className="profile-info-content">
+                  <span className="profile-info-label">Preferred Age</span>
+                  <span className="profile-info-value">
+                    {typeof userDetails.preferredAgeRange === 'string' 
+                      ? userDetails.preferredAgeRange 
+                      : `${userDetails.preferredAgeRange.min}-${userDetails.preferredAgeRange.max}`}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       <div className="profile-section separate-section">
         <h2 className="section-title">Physical Attributes</h2>
         <div className="lifestyle-traits-grid">
@@ -141,41 +239,56 @@ const Dashboard = () => {
               <span className="lifestyle-trait-value">{userDetails.hairs}</span>
             </div>
           )}
-          {userDetails?.sociability && (
-            <div className="lifestyle-trait-item">
-              <span className="lifestyle-trait-label">Sociability</span>
-              <span className="lifestyle-trait-value">{userDetails.sociability}</span>
-            </div>
-          )}
-          {userDetails?.relationship && (
-            <div className="lifestyle-trait-item">
-              <span className="lifestyle-trait-label">Relationship</span>
-              <span className="lifestyle-trait-value">{userDetails.relationship}</span>
-            </div>
-          )}
-          {userDetails?.orientation && (
-            <div className="lifestyle-trait-item">
-              <span className="lifestyle-trait-label">Orientation</span>
-              <span className="lifestyle-trait-value">{userDetails.orientation}</span>
-            </div>
-          )}
-          {userDetails?.smoking && (
-            <div className="lifestyle-trait-item">
-              <span className="lifestyle-trait-label">Smoking</span>
-              <span className="lifestyle-trait-value">{userDetails.smoking}</span>
-            </div>
-          )}
-          {!userDetails?.height && !userDetails?.weight && !userDetails?.eyes && !userDetails?.hairs && 
-           !userDetails?.sociability && !userDetails?.relationship && !userDetails?.orientation && !userDetails?.smoking && (
-            <div className="interest-tag-new">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="10"/>
-              </svg>
-              Not specified
-            </div>
-          )}
         </div>
       </div>
+
+      {/* Lifestyle & Habits */}
+      {(userDetails?.sociability || userDetails?.relationship || userDetails?.orientation || userDetails?.smoking || userDetails?.alcohol) && (
+        <div className="profile-section separate-section">
+          <h2 className="section-title">Lifestyle & Habits</h2>
+          <div className="lifestyle-traits-grid">
+            {userDetails?.sociability && (
+              <div className="lifestyle-trait-item">
+                <span className="lifestyle-trait-label">Sociability</span>
+                <span className="lifestyle-trait-value">{userDetails.sociability}</span>
+              </div>
+            )}
+            {userDetails?.relationship && (
+              <div className="lifestyle-trait-item">
+                <span className="lifestyle-trait-label">Relationship</span>
+                <span className="lifestyle-trait-value">{userDetails.relationship}</span>
+              </div>
+            )}
+            {userDetails?.orientation && (
+              <div className="lifestyle-trait-item">
+                <span className="lifestyle-trait-label">Orientation</span>
+                <span className="lifestyle-trait-value">{userDetails.orientation}</span>
+              </div>
+            )}
+            {userDetails?.smoking && (
+              <div className="lifestyle-trait-item">
+                <span className="lifestyle-trait-label">Smoking</span>
+                <span className="lifestyle-trait-value">{userDetails.smoking}</span>
+              </div>
+            )}
+            {userDetails?.alcohol && (
+              <div className="lifestyle-trait-item">
+                <span className="lifestyle-trait-label">Alcohol</span>
+                <span className="lifestyle-trait-value">{userDetails.alcohol}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {userDetails?.lifeGoal && (
+        <div className="profile-section separate-section">
+          <h2 className="section-title">Life goal of mine</h2>
+          <p className="life-goal-text">
+            {userDetails.lifeGoal}
+          </p>
+        </div>
+      )}
 
       <div className="profile-section separate-section">
         <h2 className="section-title">Photos</h2>
@@ -215,13 +328,6 @@ const Dashboard = () => {
       </div>
 
       <div className="profile-section separate-section">
-        <h2 className="section-title">Life goal of mine</h2>
-        <p className="life-goal-text">
-          {userDetails?.lifeGoal || '"Make every day of occasion"'}
-        </p>
-      </div>
-
-      <div className="profile-section separate-section">
         <h2 className="section-title">Video</h2>
         <div className="video-container">
           {userDetails?.videos && userDetails.videos.length > 0 ? (
@@ -245,4 +351,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default ProfilePage;

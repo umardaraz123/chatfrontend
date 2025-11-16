@@ -1,17 +1,8 @@
-import React, { useEffect, useState } from 'react'
-import { useAuthStore } from '../store/useAuthStore'
-import girlImage from '../images/girl.jpg'
-import boyImage from '../images/boy.jpg'
-import { TfiEmail } from "react-icons/tfi";
-import { FaUserTie } from "react-icons/fa";
-import { BsGenderMale } from "react-icons/bs";
-import { FaUserShield } from "react-icons/fa";
-import { Locate, Phone,Ruler,PersonStanding, Mails, Cake, LocateFixed, HeartHandshake, Dribbble } from 'lucide-react';
-import { CiEdit } from "react-icons/ci";
-import { Upload } from 'lucide-react';
-import { IoClose } from "react-icons/io5";
-import CreatableSelect from "react-select/creatable";
-import toast from "react-hot-toast";
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../store/useAuthStore';
+import { ChevronLeft, Camera, ChevronRight, User, Mail, Users, Phone, MapPin, Search, Heart, Pencil } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 // Edit Profile Modal Component
 const EditProfileModal = ({ isOpen, onClose, userDetails, onUpdateProfile }) => {
